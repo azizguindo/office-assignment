@@ -1,0 +1,12 @@
+.UserList-table {
+border: medium solid #000000;
+width: 50%;
+}
+.UserList-td {
+border: thin solid #6495ed;
+width: 50%;
+}
+.UserList-th {
+border: thin solid #6495ed;
+width: 50%;
+}
