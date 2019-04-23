@@ -63,8 +63,8 @@ class UserComponent extends React.Component<Props & RouteProps ,State> {
             nom : values.nom,
             prenom : values.prenom,
             statut : values.statut,
-            dateArrivee : values.dateArrivee,
-            dateDepart : values.dateDepart
+            dateArrivee : new Date(values.dateArrivee),
+            dateDepart : new Date(values.dateDepart)
         }
         UserDataService.createUser(user)
             .then(() => this.props.router.push('/users'))

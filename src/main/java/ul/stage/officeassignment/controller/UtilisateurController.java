@@ -49,7 +49,7 @@ public class UtilisateurController  {
         utilisateur.setPrenom(utilisateurDetails.getPrenom());
         utilisateur.setStatut(utilisateurDetails.getStatut());
         utilisateur.setDateArrivee(utilisateurDetails.getDateArrivee());
-        utilisateurDetails.setDateDepart(utilisateurDetails.getDateDepart());
+        utilisateur.setDateDepart(utilisateurDetails.getDateDepart());
 
         Utilisateur updatedUser = utilisateurRepository.save(utilisateur);
         return updatedUser;

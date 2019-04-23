@@ -11,6 +11,8 @@ interface User{
     statut : string;
     dateArrivee : Date;
     dateDepart : Date;
+    date1 : string;
+    date2 : string;
 }
 
 interface UserListProps {
@@ -40,13 +42,21 @@ class UserList extends React.Component<UserListProps & RouteProps ,UserListState
     componentDidMount() {
         this.setState({isLoading: true});
         this.refreshUsers();
+
     }
 
     refreshUsers(){
         UserDataService.retrieveAllUsers()
             .then(response=>{
                 this.setState({users : response.data,isLoading :false});
+                this.state.users.map((user : User)=>{
+                            user.date1 = String(new Date(user.dateArrivee).getDate())+'/'+String(new Date(user.dateArrivee).getMonth()+1)+'/'+String(new Date(user.dateArrivee).getFullYear());
+                            user.date2 = String(new Date(user.dateDepart).getDate())+'/'+String(new Date(user.dateDepart).getMonth()+1)+'/'+String(new Date(user.dateDepart).getFullYear());
+                            }
+                        );
+                this.setState({users : this.state.users,isLoading :false});
         });
+
 
     }
 
@@ -92,8 +102,8 @@ class UserList extends React.Component<UserListProps & RouteProps ,UserListState
                                  <td>{user.nom}</td>
                                  <td>{user.prenom}</td>
                                  <td>{user.statut}</td>
-                                 <td>{user.dateArrivee}</td>
-                                 <td>{user.dateDepart}</td>
+                                 <td>{user.date1}</td>
+                                 <td>{user.date2}</td>
                                  <td><button className="btn btn-success"  onClick={this.handleUpdate(user.id)}>Update</button></td>
                                  <td><button className="btn btn-warning"  onClick={this.handleDelete(user.id)}>Delete</button></td>
                         </tr>
