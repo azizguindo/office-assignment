@@ -4,15 +4,32 @@ import { RouteProps } from 'react-router';
 import { withRouter } from 'react-router';
 import {History} from 'history';
 
+interface Bureau{
+    id : number;
+    nbPlaces : number;
+    nbPlacesOccupees : number;
+    numero : string;
+    statut : string;
+}
+
+interface Statut{
+    id : number;
+    nom : string;
+    place : number;
+    type : string ;
+}
+
 interface User{
     id : number;
     nom : string;
     prenom : string;
-    statut : string;
+    nomStatut : string;
     dateArrivee : Date;
     dateDepart : Date;
     date1 : string;
     date2 : string;
+    statut : Statut ;
+    bureau : Bureau;
 }
 
 interface UserListProps {
@@ -86,7 +103,7 @@ class UserList extends React.Component<UserListProps & RouteProps ,UserListState
              <div>
                  <h2>User List</h2>
                  <div className="container">
-                 <table className="table table-striped">
+                 <table className="table table-bordered table-striped">
                     <tbody>
                         <tr>
                             <th>Nom</th>
@@ -94,25 +111,27 @@ class UserList extends React.Component<UserListProps & RouteProps ,UserListState
                             <th>Statut</th>
                             <th>Date Arrivée</th>
                             <th>Date Départ</th>
-                            <th>Update</th>
-                            <th>Delete</th>
+                            <th>Bureau</th>
+                            <th/>
+                            <th/>
                         </tr>
                         {users.map((user : User)=>
                         <tr key={user.id}>
                                  <td>{user.nom}</td>
                                  <td>{user.prenom}</td>
-                                 <td>{user.statut}</td>
+                                 <td>{user.nomStatut}</td>
                                  <td>{user.date1}</td>
                                  <td>{user.date2}</td>
-                                 <td><button className="btn btn-success"  onClick={this.handleUpdate(user.id)}>Update</button></td>
-                                 <td><button className="btn btn-warning"  onClick={this.handleDelete(user.id)}>Delete</button></td>
+                                 <td>Non affecté</td>
+                                 <td><button className="btn btn-success"  onClick={this.handleUpdate(user.id)}>Modifier</button></td>
+                                 <td><button className="btn btn-warning"  onClick={this.handleDelete(user.id)}>Supprimer</button></td>
                         </tr>
                         )}
                     </tbody>
                  </table>
                  </div>
                  <div className="row">
-                     <button className="btn btn-success" onClick={this.handleAdd()}>Add</button>
+                     <button className="btn btn-success" onClick={this.handleAdd()}>Ajouter</button>
                  </div>
              </div>
         );

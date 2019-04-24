@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 const INSTRUCTOR = 'users';
-const COURSE_API_URL = 'http://localhost:8080';
-const INSTRUCTOR_API_URL = `${COURSE_API_URL}/api/${INSTRUCTOR}`;
+const API_URL = 'http://localhost:8080/api';
+const INSTRUCTOR_API_URL = `${API_URL}/${INSTRUCTOR}`;
 
 class UserDataService {
+
     retrieveAllUsers(){
         return axios.get(`${INSTRUCTOR_API_URL}`);
     }
@@ -24,6 +25,7 @@ class UserDataService {
     createUser(user){
         return axios.post(`${INSTRUCTOR_API_URL}/`,user);
     }
+
 }
 
 export default new UserDataService();

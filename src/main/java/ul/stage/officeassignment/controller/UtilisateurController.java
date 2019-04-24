@@ -47,7 +47,7 @@ public class UtilisateurController  {
 
         utilisateur.setNom(utilisateurDetails.getNom());
         utilisateur.setPrenom(utilisateurDetails.getPrenom());
-        utilisateur.setStatut(utilisateurDetails.getStatut());
+        utilisateur.setNomStatut(utilisateurDetails.getNomStatut());
         utilisateur.setDateArrivee(utilisateurDetails.getDateArrivee());
         utilisateur.setDateDepart(utilisateurDetails.getDateDepart());
 

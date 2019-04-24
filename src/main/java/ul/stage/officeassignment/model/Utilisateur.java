@@ -24,8 +24,13 @@ public class Utilisateur implements Serializable {
     private String prenom;
 
     @NotBlank
-    private String statut;
+    private String nomStatut;
 
+    @ManyToOne
+    private Statut statut;
+
+    @ManyToOne
+    private Bureau bureau;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateArrivee;
@@ -57,11 +62,19 @@ public class Utilisateur implements Serializable {
         this.prenom = prenom;
     }
 
-    public String getStatut() {
+    public String getNomStatut() {
+        return nomStatut;
+    }
+
+    public void setNomStatut(String nomStatut) {
+        this.nomStatut = nomStatut;
+    }
+
+    public Statut getStatut() {
         return statut;
     }
 
-    public void setStatut(String statut) {
+    public void setStatut(Statut statut) {
         this.statut = statut;
     }
 
@@ -79,5 +92,13 @@ public class Utilisateur implements Serializable {
 
     public void setDateDepart(Date dateDepart) {
         this.dateDepart = dateDepart;
+    }
+
+    public Bureau getBureau() {
+        return bureau;
+    }
+
+    public void setBureau(Bureau bureau) {
+        this.bureau = bureau;
     }
 }

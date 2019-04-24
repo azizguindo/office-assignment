@@ -13,7 +13,7 @@ interface State{
     id : number;
     nom : string;
     prenom : string;
-    statut : string;
+    statut1 : string;
     dateArrivee : Date;
     dateDepart : Date;
 }
@@ -21,7 +21,7 @@ interface State{
 interface Err{
     nom : string;
     prenom : string;
-    statut : string;
+    statut1 : string;
     dateerr : string;
 }
 
@@ -34,7 +34,7 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
             id: this.props.router.params.id,
             nom : "",
             prenom : "",
-            statut : "",
+            statut1 : "",
             dateArrivee : new Date(),
             dateDepart : new Date()
         };
@@ -70,7 +70,7 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
             id: this.state.id,
             nom: values.nom,
             prenom: values.prenom,
-            statut: values.statut,
+            statut1: values.statut1,
             dateArrivee : new Date(values.dateArrivee),
             dateDepart : new Date(values.dateDepart)
         }
@@ -84,7 +84,7 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
             .then(response => this.setState({
             nom: response.data.nom,
             prenom: response.data.prenom,
-            statut: response.data.statut,
+            statut1: response.data.statut1,
             dateArrivee : response.data.dateArrivee,
             dateDepart : response.data.dateDepart
             }));
@@ -105,7 +105,7 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
                     initialValues={{id : this.props.router.params.id,
                                     nom : this.state.nom,
                                     prenom : this.state.prenom,
-                                    statut : this.state.statut,
+                                    statut1 : this.state.statut1,
                                     dateArrivee : this.state.dateArrivee,
                                     dateDepart : this.state.dateDepart
                                     }}
@@ -134,10 +134,13 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
                                       </fieldset>
                                       <fieldset className="form-group">
                                            <label>Statut</label>
-                                           <Field  className="form-control" component="select" name="statut" placeholder="Statut">
+                                           <Field  className="form-control" component="select" name="statut1" placeholder="Statut">
                                                 <option value="" selected={true} disabled={true} hidden={true}>Choose here</option>
-                                                <option value="Enseignant">Enseignant</option>
-                                                <option value="Etudiant">Etudiant</option>
+                                                <option value="Professeur">Professeur</option>
+                                                <option value="PhD">PhD</option>
+                                                <option value="PostDoc">PostDoc</option>
+                                                <option value="Admin">Admin</option>
+                                                <option value="Stagiaire">Stagiaire</option>
                                            </Field>
                                       </fieldset>
                                       <fieldset className="form-group">
@@ -148,7 +151,7 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
                                            <label>Date Départ</label>
                                            <Field  className="form-control" type="date" name="dateDepart"/>
                                       </fieldset>
-                                      <button className="btn btn-success" type="submit">Save</button>
+                                      <button className="btn btn-success" type="submit">Enregistrer</button>
                                  </Form>
                             )
                         }
