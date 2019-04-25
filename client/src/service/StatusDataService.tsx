@@ -12,4 +12,4 @@ class StatusDataService {
 
 }
 
-export default new UserDataService();
+export default new StatusDataService();

@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {browserHistory,Router,Route} from "react-router";
 import UserList from '../UserList'
+import OfficeList from '../OfficeList'
 import UserComponentUpdate from './UserComponentUpdate'
 import UserComponentAdd from './UserComponentAdd'
-
+import OfficeComponentAdd from './OfficeComponentAdd'
 
 
 class InstructorApp extends React.Component<{},any>  {
@@ -15,6 +16,8 @@ class InstructorApp extends React.Component<{},any>  {
                         <Route path="/users"  component = {UserList} />
                         <Route path="/users/update/:id"  component = {UserComponentUpdate}/>
                         <Route path="/users/add"  component = {UserComponentAdd} />
+                        <Route path="/offices" component = {OfficeList} />
+                        <Route path="/offices/add" component = {OfficeComponentAdd} />
             </Router>
         )
     }

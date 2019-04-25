@@ -30,13 +30,13 @@ interface Err{
     nom : string;
     prenom : string;
     nomStatut : string;
-    dateArrivee : Date;
-    dateDepart : Date;
+    dateArrivee : string;
+    dateDepart : string;
     statut : Statut;
     statuts : Array<Statut>;
 }
 
-class UserComponent extends React.Component<Props & RouteProps ,State> {
+class UserComponentAdd extends React.Component<Props & RouteProps ,State> {
 
     constructor(props) {
         super(props);
@@ -75,6 +75,11 @@ class UserComponent extends React.Component<Props & RouteProps ,State> {
              errors.prenom= 'Enter at least 2 Characters in Prenom';
         }
 
+        if(values.dateArrivee>values.dateDepart){
+            errors.dateArrivee= "La date d'arrivée doit être avant la date de départ";
+            errors.dateDepart= "La date d'arrivée doit être avant la date de départ";
+            alert(JSON.stringify(errors));
+        }
 
         return errors;
 
@@ -83,22 +88,19 @@ class UserComponent extends React.Component<Props & RouteProps ,State> {
     onSubmit(values) {
 
         this.state.statuts.map((statut1: Statut)=>{
-               if(statut1.nom === values.nomStatut){
-                   const user = {
-                       nom : values.nom.charAt(0).toUpperCase() + values.nom.slice(1),
-                       prenom : values.prenom.charAt(0).toUpperCase() + values.prenom.slice(1),
-                       nomStatut : values.nomStatut,
-                       dateArrivee : new Date(values.dateArrivee),
-                       dateDepart : new Date(values.dateDepart),
-                       statut : statut1
+            if(statut1.nom === values.nomStatut){
+                const user = {
+                    nom : values.nom.charAt(0).toUpperCase() + values.nom.slice(1),
+                    prenom : values.prenom.charAt(0).toUpperCase() + values.prenom.slice(1),
+                    nomStatut : values.nomStatut,
+                    dateArrivee : new Date(values.dateArrivee),
+                    dateDepart : new Date(values.dateDepart),
+                    statut : statut1
                    }
-                   alert(JSON.stringify(statut1))
                    UserDataService.createUser(user)
                        .then(() => this.props.router.push('/users'))
                }
-          })
-
-
+        })
     }
 
 
@@ -139,14 +141,22 @@ class UserComponent extends React.Component<Props & RouteProps ,State> {
                                                 <option value="Stagiaire">Stagiaire</option>
                                            </Field>
                                       </fieldset>
-                                      <fieldset className="form-group">
-                                           <label>Date Arrivée</label>
-                                           <Field  className="form-control" type="date" name="dateArrivee"/>
-                                      </fieldset>
-                                      <fieldset className="form-group">
-                                           <label>Date Départ</label>
-                                           <Field  className="form-control" type="date" name="dateDepart"/>
-                                      </fieldset>
+                                      <div className="row">
+                                        <div className="col">
+                                            <fieldset className="form-group">
+                                                <label>Date Arrivée</label>
+                                                <Field className="form-control" type="date" name="dateArrivee" />
+                                                <ErrorMessage name="dateArrivee" component="div" className="alert alert-warning" />
+                                            </fieldset>
+                                        </div>
+                                        <div className="col">
+                                            <fieldset className="form-group">
+                                                <label>Date Départ</label>
+                                                <Field className="form-control" type="date" name="dateDepart"/>
+                                                <ErrorMessage name="dateDepart" component="div" className="alert alert-warning" />
+                                            </fieldset>
+                                        </div>
+                                      </div>
                                       <button className="btn btn-success" type="submit">Enregistrer</button>
                                  </Form>
                             )
@@ -158,4 +168,4 @@ class UserComponent extends React.Component<Props & RouteProps ,State> {
     }
 }
 
-export default withRouter(UserComponent);
+export default withRouter(UserComponentAdd);

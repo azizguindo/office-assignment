@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000/offices")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BureauController {
 
     @Autowired
@@ -59,7 +59,6 @@ public class BureauController {
     public ResponseEntity<?> deleteOffice(@PathVariable(value = "id") Long bureauId){
         Bureau bureau = bureauRepository.findById(bureauId)
                 .orElseThrow(()-> new ResourceNotFoundException("Bureau", "id",bureauRepository));
-
         bureauRepository.delete(bureau);
         return ResponseEntity.ok().build();
     }

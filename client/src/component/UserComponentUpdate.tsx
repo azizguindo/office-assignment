@@ -1,31 +1,46 @@
 import * as React from 'react';
 import { RouteProps } from 'react-router';
 import UserDataService from '../service/UserDataService';
+import StatusDataService from '../service/StatusDataService';
 import { withRouter } from 'react-router';
 import { Formik, Form, Field, ErrorMessage} from 'formik';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+
 
 interface Props{
+}
+
+interface Statut{
+    id : number;
+    nom : string;
+    place : number;
+    type : string ;
 }
 
 interface State{
     id : number;
     nom : string;
     prenom : string;
-    statut1 : string;
+    nomStatut : string;
     dateArrivee : Date;
     dateDepart : Date;
+    statut : Statut;
+    statuts : Array<Statut>;
 }
 
 interface Err{
     nom : string;
     prenom : string;
-    statut1 : string;
+    nomStatut : string;
+    dateArrivee : string;
+    dateDepart : string;
+    statut : Statut;
+    statuts : Array<Statut>;
     dateerr : string;
 }
 
 class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
+
+
 
     constructor(props) {
         super(props);
@@ -34,13 +49,16 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
             id: this.props.router.params.id,
             nom : "",
             prenom : "",
-            statut1 : "",
+            nomStatut : "",
             dateArrivee : new Date(),
-            dateDepart : new Date()
+            dateDepart : new Date(),
+            statut : {id : 0,nom:"",place:0,type:"Std"},
+            statuts : []
         };
         this.onSubmit = this.onSubmit.bind(this);
         this.validate = this.validate.bind(this);
     }
+
 
     validate(values) {
         const errors = {} as Err;
@@ -57,8 +75,9 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
         }
 
         if(values.dateArrivee>values.dateDepart){
-            errors.dateerr = "La date d'arrivée doit être avant la date de départ";
-            alert(errors);
+            errors.dateArrivee= "La date d'arrivée doit être avant la date de départ";
+            errors.dateDepart= "La date d'arrivée doit être avant la date de départ";
+            alert(JSON.stringify(errors));
         }
 
         return errors;
@@ -66,17 +85,22 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
     }
 
     onSubmit(values) {
-        const user = {
-            id: this.state.id,
-            nom: values.nom,
-            prenom: values.prenom,
-            statut1: values.statut1,
-            dateArrivee : new Date(values.dateArrivee),
-            dateDepart : new Date(values.dateDepart)
-        }
-
-            UserDataService.updateUser(this.state.id, user)
-                .then(() => this.props.router.push('/users'))
+        this.state.statuts.map((statut1: Statut)=>{
+            if(statut1.nom === values.nomStatut){
+                const user = {
+                    id: this.state.id,
+                    nom: values.nom,
+                    prenom: values.prenom,
+                    nomStatut : values.nomStatut,
+                    dateArrivee : new Date(values.dateArrivee),
+                    dateDepart : new Date(values.dateDepart),
+                    statut : statut1
+                }
+                alert(JSON.stringify(user.statut,null,4))
+                UserDataService.updateUser(this.state.id, user)
+                    .then(() => this.props.router.push('/users'))
+            }
+        })
     }
 
     componentDidMount() {
@@ -84,30 +108,31 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
             .then(response => this.setState({
             nom: response.data.nom,
             prenom: response.data.prenom,
-            statut1: response.data.statut1,
+            nomStatut: response.data.nomStatut,
             dateArrivee : response.data.dateArrivee,
-            dateDepart : response.data.dateDepart
+            dateDepart : response.data.dateDepart,
+            statut : response.data.statut
+            }));
+        StatusDataService.retrieveStatuts()
+            .then(response => this.setState({
+            statuts : response.data
             }));
     }
 
-    handleArrivee(date) {
-        this.setState({
-          dateArrivee: date
-        });
-    }
 
     render() {
         return (
-            <div>
+            <div className="container">
                 <h3>User</h3>
                 <div className="container">
                     <Formik
                     initialValues={{id : this.props.router.params.id,
                                     nom : this.state.nom,
                                     prenom : this.state.prenom,
-                                    statut1 : this.state.statut1,
+                                    nomStatut : this.state.nomStatut,
                                     dateArrivee : this.state.dateArrivee,
-                                    dateDepart : this.state.dateDepart
+                                    dateDepart : this.state.dateDepart,
+                                    statut : this.state.statut
                                     }}
                     onSubmit={this.onSubmit}
                     validateOnChange={false}
@@ -117,7 +142,6 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
                         {
                             (props) => (
                                  <Form>
-                                      <ErrorMessage name="dateerr" component="div" className="alert alert-warning" />
                                       <fieldset className="form-group">
                                            <label>Id</label>
                                            <Field className="form-control" type="text" name="id" disabled={true} />
@@ -134,7 +158,7 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
                                       </fieldset>
                                       <fieldset className="form-group">
                                            <label>Statut</label>
-                                           <Field  className="form-control" component="select" name="statut1" placeholder="Statut">
+                                           <Field  className="form-control" component="select" name="nomStatut" placeholder="Statut">
                                                 <option value="" selected={true} disabled={true} hidden={true}>Choose here</option>
                                                 <option value="Professeur">Professeur</option>
                                                 <option value="PhD">PhD</option>
@@ -143,14 +167,22 @@ class UserComponentUpdate extends React.Component<Props & RouteProps ,State> {
                                                 <option value="Stagiaire">Stagiaire</option>
                                            </Field>
                                       </fieldset>
-                                      <fieldset className="form-group">
-                                           <label>Date Arrivée</label>
-                                           <Field className="form-control" component={DatePicker} name="dateArrivee" placeHolder="Date"/>
-                                      </fieldset>
-                                      <fieldset className="form-group">
-                                           <label>Date Départ</label>
-                                           <Field  className="form-control" type="date" name="dateDepart"/>
-                                      </fieldset>
+                                      <div className="row">
+                                        <div className="col">
+                                            <fieldset className="form-group">
+                                                <label>Date Arrivée</label>
+                                                <Field className="form-control" type="date" name="dateArrivee" />
+                                                <ErrorMessage name="dateDepart" component="div" className="alert alert-warning" />
+                                            </fieldset>
+                                        </div>
+                                        <div className="col">
+                                            <fieldset className="form-group">
+                                                <label>Date Départ</label>
+                                                <Field className="form-control" type="date" name="dateDepart"/>
+                                                <ErrorMessage name="dateDepart" component="div" className="alert alert-warning" />
+                                            </fieldset>
+                                        </div>
+                                      </div>
                                       <button className="btn btn-success" type="submit">Enregistrer</button>
                                  </Form>
                             )
