@@ -99,18 +99,6 @@ function MHead(props) {
             <Fab color={"secondary"}><Link to={"/statut/all"} ><Icon>account_box</Icon></Link></Fab>
           </div>
           <div className={classes.grow} />
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <Icon>search</Icon>
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              />
-          </div>
         </Toolbar>
       </AppBar>
     </div>

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ul.stage.officeassignment.exception.ResourceNotFoundException;
 import ul.stage.officeassignment.model.Utilisateur;
 import ul.stage.officeassignment.repository.UtilisateurRepository;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -65,5 +64,10 @@ public class UtilisateurController  {
         utilisateurRepository.delete(utilisateur);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("users/notA")
+    public List<Utilisateur> getNotAssignedUsers(){
+        return utilisateurRepository.findByBureauIsNull();
     }
 }

@@ -23,6 +23,7 @@ const styles = {
     flex: 1,
   },
 };
+
 export default class AddUser extends Component{
 
   constructor(props) {

@@ -28,9 +28,6 @@ public class Bureau implements Serializable {
     @NotNull
     private Integer nbPlacesOccupees;
 
-    @OneToMany(mappedBy = "bureau")
-    private Collection<Utilisateur> utilisateurs;
-
     public Long getId() {
         return id;
     }
@@ -45,14 +42,6 @@ public class Bureau implements Serializable {
 
     public void setNbPlacesOccupees(Integer nbPlacesOccupees) {
         this.nbPlacesOccupees = nbPlacesOccupees;
-    }
-
-    public Collection<Utilisateur> getUtilisateurs() {
-        return utilisateurs;
-    }
-
-    public void setUtilisateurs(Collection<Utilisateur> utilisateurs) {
-        this.utilisateurs = utilisateurs;
     }
 
     public String getNumero() {

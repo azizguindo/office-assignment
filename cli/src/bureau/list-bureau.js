@@ -213,7 +213,7 @@ export default class ListBureau  extends Component{
                                 <TableRow key={row.id}  style={{background:row.nbPlaces-row.utilisateurs.length==0?"blue":""}} >
                                     <TableCell>{row.numero}</TableCell>
                                     <TableCell>{row.nbPlaces}</TableCell>
-                                    <TableCell>{row.utilisateurs.length}details</TableCell>
+                                    <TableCell>{row.utilisateurs.length}</TableCell>
                                     <TableCell>{row.statut}</TableCell>
                                     <TableCell><Badge showZero={true} color={row.nbPlaces-row.utilisateurs.length==0?"secondary":""} badgeContent={row.nbPlaces-row.utilisateurs.length}>
                                         <Icon>mail</Icon>
@@ -224,6 +224,9 @@ export default class ListBureau  extends Component{
                                         </Tooltip>
                                         <Tooltip title={"modifier"}>
                                             <Button tag={row.numero} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
+                                        </Tooltip>
+                                        <Tooltip title={"affecter"}>
+                                            <Button tag={row.id} onClick={this.handleAssign} color={"primary"}><Icon>person_add</Icon></Button>
                                         </Tooltip>
                                     </TableCell>
                                     <Menu anchorEl={anchorEL} open={Boolean(anchorEL)} >
