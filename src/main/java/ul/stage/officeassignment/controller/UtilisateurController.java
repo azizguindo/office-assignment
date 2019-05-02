@@ -32,6 +32,7 @@ public class UtilisateurController  {
         .orElseThrow(()-> new ResourceNotFoundException("Utilisateur","id",utilisateurId));
     }
 
+
     //Add a user
     @PostMapping("/users")
     public Utilisateur addUser(@Valid @RequestBody Utilisateur utilisateur){
