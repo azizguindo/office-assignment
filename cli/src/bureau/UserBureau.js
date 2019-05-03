@@ -12,8 +12,6 @@ import {
   TableCell,
   TableHead, TableRow, Tooltip
 } from "@material-ui/core";
-import AddUser from "./AddUser";
-import EditUser from"./EditUser";
 import Service from "../service/Service";
 import {
   URL_ST_ADD, URL_ST_ALL, URL_ST_UPDATE,
@@ -40,7 +38,15 @@ export default class ListUser extends Component {
       .then(data=>{
         this.setState({lesUtilisateurs:data});
       });
+    }catch (e) {
+      console.log("erreur",e.toString());
+    }
 
+    try {
+      Service.get(URL_BU_ALL)
+      .then(data=>{
+        this.setState({lesBureaux:data});
+      });
     }catch (e) {
       console.log("erreur",e.toString());
     }
@@ -102,14 +108,15 @@ export default class ListUser extends Component {
     })
   }
 
+  componentDidMount () {
+    const{id} =this.props.match.params;
+  }
+
   render() {
+    console.log(this.props.match.params.id);
     const {lesUtilisateurs,anchorEL}=this.state;
     return(
       <div>
-        <div>
-          <Button onClick={this.handleAdd}><Icon>add_circle</Icon></Button>
-          <AddUser editMode={this.state.modeEdit} editValue={this.state.editValue}  opened={this.state.isOpened} closed={this.dialogClose} saved={this.save}></AddUser>
-        </div>
         <Table >
             <TableHead style={{background:"beige"}}>
               <TableCell>Info</TableCell>
@@ -124,7 +131,12 @@ export default class ListUser extends Component {
             </TableHead>
           <TableBody>
             {
-              lesUtilisateurs.map((user)=>(
+              lesUtilisateurs.map((user)=>{
+
+                if(user.bureau !== null){
+                  console.log(user);
+                  if( user.bureau.id !== this.props.match.params.id){
+                  return(
                   <TableRow key={user.id}  style={{background:new Date(user.dateDepart) < new Date()?"red":""}} >
                     <TableCell>
                       {new Date(user.dateDepart) < new Date()?
@@ -145,13 +157,14 @@ export default class ListUser extends Component {
                         </TableCell>
                         <TableCell>
                           { user.bureau ? user.bureau.numero: "Non Affecté" }
-                        </TableCell>
+                          </TableCell>
                         <TableCell>
                           <Button tag={user.id} onClick={this.handleDelete}   color={"primary"}><Icon>delete</Icon></Button>
-                          <Button tag={user.id} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
                         </TableCell>
-                      </TableRow>
-                  ))
+                      </TableRow>);
+                    }}
+                  }
+                  )
                 }
               </TableBody>
             </Table>

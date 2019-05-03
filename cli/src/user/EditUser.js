@@ -64,7 +64,7 @@ export default class EditUser extends Component{
           <FormControl margin="normal" fullWidth={true}>
             <InputLabel htmlFor="statut">Statut</InputLabel>
             <Select name={"nomStatut"} id={"nomStatut"} value={this.state.nomStatut} onChange={this.handleInput}>
-              <em>Veuiller choisir </em>
+              <em>Veuillez choisir un statut</em>
               <MenuItem value={"Professeur"}>Professeur</MenuItem>
               <MenuItem value={"PhD"}>PhD</MenuItem>
               <MenuItem value={"PostDoc"}>PostDoc</MenuItem>

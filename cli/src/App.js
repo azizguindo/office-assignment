@@ -9,6 +9,7 @@ import MHead from "./MUHead";
 import ListStatut from "./statut/ListStatut";
 import ListUser from "./user/ListUser";
 import ListBureau from "./bureau/list-bureau";
+import UserBureau from "./bureau/UserBureau";
 
 
 
@@ -22,6 +23,8 @@ function App() {
         <Route path="/statut" component={ListStatut}/>
 
         <Route path="/user" component={ListUser}/>
+
+      <Route path="/bureauusers/:id" component={UserBureau}/>
 
     </Router>
   );

@@ -50,7 +50,6 @@ export default class AddUser extends Component{
       editValue:{},
       lesStatuts:[]
     }
-    console.log(props.editValue,"la");
 
   }
 
@@ -61,7 +60,7 @@ export default class AddUser extends Component{
       prenom:val.prenom ,
       email: val.email,
       nomStatut: val.nomStatut,
-      bureau: val.bureau,
+      bureau: null,
       dateArrivee: val.dateArrivee,
       dateDepart: val.dateDepart,
       id:val.id,
@@ -76,7 +75,6 @@ export default class AddUser extends Component{
       Service.get(URL_ST_ALL)
       .then(data=>{
         this.setState({lesStatuts:data});
-        console.log(this.state.lesStatuts);
       });
 
     }catch (e) {
@@ -93,14 +91,13 @@ export default class AddUser extends Component{
 
   onSubmit=(event)=>{
     const {nom,prenom,nomStatut,dateArrivee,dateDepart,bureau,statut}=this.state;
-    alert(this.state.nomStatut);
     this.state.lesStatuts.map((statut1)=>
       {if(statut1.nom === nomStatut){
         this.props.saved({
           nom:nom,
           prenom:prenom,
           nomStatut:nomStatut,
-          bureau:bureau,
+          bureau:null,
           dateArrivee:dateArrivee,
           dateDepart:dateDepart,
           statut :statut1,
@@ -136,7 +133,7 @@ render() {
         <FormControl margin="normal" fullWidth={true}>
           <InputLabel htmlFor="statut">Statut</InputLabel>
           <Select name={"nomStatut"} id={"nomStatut"} value={this.state.nomStatut} onChange={this.handleInput}>
-            <em>None</em>
+            <em>Veuillez choisir un statut</em>
             <MenuItem value={"Professeur"}>Professeur</MenuItem>
             <MenuItem value={"PhD"}>PhD</MenuItem>
             <MenuItem value={"PostDoc"}>PostDoc</MenuItem>

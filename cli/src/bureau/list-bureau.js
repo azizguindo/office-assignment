@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import AddBureau from "./add-bureau";
 import Service from "../service/Service";
-import {URL_BU_ADD, URL_BU_ALL, URL_BU_DELETE, URL_BU_UPDATE} from "../utils/Constant";
+import {URL_BU_ADD, URL_BU_ALL, URL_BU_DELETE, URL_BU_UPDATE,URL_USER_ALL} from "../utils/Constant";
 import {Link} from "react-router-dom";
 export default class ListBureau  extends Component{
 
@@ -27,6 +27,7 @@ export default class ListBureau  extends Component{
         };
         this.state = {
             lesBureaux:[],
+            lesUtilisateurs:[],
             anchorEL:null,
             isSearch:false,
             isOpened:false,
@@ -37,6 +38,9 @@ export default class ListBureau  extends Component{
         };
 
     }
+
+
+
 
     componentWillReceiveProps(nextProps, nextContext) {
 
@@ -53,6 +57,15 @@ export default class ListBureau  extends Component{
          console.log("erreur",e.toString());
       }
 
+      try {
+        Service.get(URL_USER_ALL)
+        .then(data=>{
+          this.setState({lesUtilisateurs:data});
+        });
+
+      }catch (e) {
+        console.log("erreur",e.toString());
+      }
     }
 
     handleEdit=(event)=>{
@@ -115,7 +128,6 @@ export default class ListBureau  extends Component{
             case "none":
                 value="dec"
                 data.sort((a,b)=>{
-
                     return -(a.nbPlaces-a.utilisateurs.length)+(b.nbPlaces-b.utilisateurs.length)
                 })
                 break;
@@ -150,7 +162,6 @@ export default class ListBureau  extends Component{
             case "none":
                 value="dec"
                 data.sort((a,b)=>{
-
                     return (a.nbPlaces-b.nbPlaces)
                 })
                 break;
@@ -186,8 +197,24 @@ export default class ListBureau  extends Component{
         console.log(data);
         this.setState({isSearch:true,findItem:data});
     }
+
+    test(){
+      let result =<TableCell>{arguments[0].nbPlacesOccupees}</TableCell>;
+      let occupation = 0;
+        this.state.lesUtilisateurs.map((user)=>{
+          if(user.bureau !== null){
+            if(user.bureau.id == arguments[0].id){
+              occupation = occupation + user.statut.place
+              const id =  arguments[0].id;
+              result = <TableCell><Link  to={`/bureauusers/${id}`}>{occupation }</Link></TableCell>
+            }
+          }
+        })
+        return result;
+
+    }
     render() {
-       // const {lesBureaux,anchorEL}=this.state;
+       console.log(this.state.lesUtilisateurs);
         const lesBureaux=(this.state.isSearch&&this.state.findItem.length!=0)?this.state.findItem:this.state.lesBureaux;
         const anchorEL=this.state.anchorEL;
         return(
@@ -210,12 +237,12 @@ export default class ListBureau  extends Component{
                     <TableBody>
                         {
                             lesBureaux.map((row)=>(
-                                <TableRow key={row.id}  style={{background:row.nbPlaces-row.utilisateurs.length==0?"blue":""}} >
+                                <TableRow key={row.id}  style={{background:row.nbPlaces==0?"blue":""}} >
                                     <TableCell>{row.numero}</TableCell>
                                     <TableCell>{row.nbPlaces}</TableCell>
-                                    <TableCell>{row.utilisateurs.length}</TableCell>
+                                    {this.test(row)}
                                     <TableCell>{row.statut}</TableCell>
-                                    <TableCell><Badge showZero={true} color={row.nbPlaces-row.utilisateurs.length==0?"secondary":""} badgeContent={row.nbPlaces-row.utilisateurs.length}>
+                                    <TableCell><Badge showZero={true} color={row.nbPlaces==0?"secondary":""} badgeContent={row.nbPlaces}>
                                         <Icon>mail</Icon>
                                     </Badge></TableCell>
                                     <TableCell>
