@@ -1,4 +1,4 @@
-import React,{Component} from 'react'
+import React,{Component,useState } from 'react'
 import {
   AppBar,
   Button,
@@ -13,7 +13,10 @@ import {
 } from "@material-ui/core";
 import { URL_ST_ALL} from "../utils/Constant";
 import Service from "../service/Service";
+import{MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
 
+import DateFnsUtils from "@date-io/date-fns";
 
 const styles = {
   appBar: {
@@ -34,8 +37,8 @@ export default class AddUser extends Component{
       email:"",
       nomStatut:"",
       bureau:"",
-      dateArrivee:Date,
-      dateDepart:Date,
+      dateArrivee:new Date(),
+      dateDepart:new Date(),
       statut :{
         id : 0,
         nom : "",
@@ -58,15 +61,15 @@ export default class AddUser extends Component{
     this.setState( {
       nom:val.nom,
       prenom:val.prenom ,
-      email: val.email,
       nomStatut: val.nomStatut,
-      bureau: null,
-      dateArrivee: val.dateArrivee,
-      dateDepart: val.dateDepart,
+      statut : val.statut,
+      dateArrivee : val.dateArrivee,
+      dateDepart : val.dateDepart,
+      bureau: val.bureau,
       id:val.id,
       editMode:nextProps.editMode
-
     });
+
 
   }
 
@@ -92,23 +95,53 @@ export default class AddUser extends Component{
   onSubmit=(event)=>{
     const {nom,prenom,nomStatut,dateArrivee,dateDepart,bureau,statut}=this.state;
     this.state.lesStatuts.map((statut1)=>
-      {if(statut1.nom === nomStatut){
-        this.props.saved({
-          nom:nom,
-          prenom:prenom,
-          nomStatut:nomStatut,
-          bureau:null,
-          dateArrivee:dateArrivee,
-          dateDepart:dateDepart,
-          statut :statut1,
-          id: this.state.id,
-        },this.state.editMode);
-        this.props.closed();
-      }},
-    )
+    {if(statut1.nom === nomStatut){
+      this.props.saved({
+        nom:nom.charAt(0).toUpperCase() + nom.slice(1),
+        prenom:prenom.charAt(0).toUpperCase() + prenom.slice(1),
+        nomStatut:nomStatut,
+        bureau:null,
+        dateArrivee:dateArrivee,
+        dateDepart:dateDepart,
+        statut :statut1,
+        id: this.state.id,
+      },this.state.editMode);
+      this.props.closed();
+    }},
+  )
 }
 
+
 render() {
+  let d1= "";
+
+  if(this.state.dateArrivee){
+    this.state.dateArrivee = new Date(this.state.dateArrivee);
+    d1 = String(this.state.dateArrivee.getFullYear())+'-';
+    if(this.state.dateArrivee.getMonth()+1<10){
+      d1 = d1 + '0';
+    }
+    d1 = d1 + String(this.state.dateArrivee.getMonth()+1)+'-';
+    if(this.state.dateArrivee.getDate()<10){
+      d1 = d1 + '0';
+    }
+    d1 = d1 + String(this.state.dateArrivee.getDate());
+  }
+
+  let d2= "";
+  if(this.state.dateDepart){
+    this.state.dateDepart = new Date(this.state.dateDepart);
+    d2 = String(this.state.dateDepart.getFullYear())+'-';
+    if(this.state.dateDepart.getMonth()+1<10){
+      d2 = d2 + '0';
+    }
+    d2 = d2 + String(this.state.dateDepart.getMonth()+1)+'-';
+    if(this.state.dateDepart.getDate()<10){
+      d2 = d2 + '0';
+    }
+    d2 = d2 + String(this.state.dateDepart.getDate());
+  }
+
   return(
     <Dialog open={this.props.opened}  fullScreen={true}>
       <AppBar className={styles.appBar}>
@@ -124,7 +157,7 @@ render() {
       <form  style={{margin:"10%"}}>
         <FormControl margin="normal" error={false} fullWidth={true}>
           <InputLabel htmlFor="nom">Nom</InputLabel>
-          <Input  id="nom" name="nom" type="text"    onChange={this.handleInput} value={this.state.nom}/>
+          <Input  id="nom" name="nom" type="text"    onChange={this.handleInput} value={this.state.nom} />
         </FormControl>
         <FormControl margin="normal" error={false} fullWidth={true}>
           <InputLabel htmlFor="prenom">Prénom</InputLabel>
@@ -142,14 +175,15 @@ render() {
           </Select>
         </FormControl>
         <FormControl margin="normal" fullWidth={true}>
-          <FormLabel  htmlFor="dateArrivee">Date d'arrivée</FormLabel>
-          <Input id="dateArrivee" required={true} name='dateArrivee' type="date" onChange={this.handleInput} value={this.state.dateArrivee}/>
+          <FormLabel htmlFor="dateArrivee">Date d'arrivée</FormLabel>
+          <Input id="dateArrivee" required={true} name='dateArrivee' type="date" onChange={this.handleInput} value={d1} />
         </FormControl>
         <FormControl margin="normal" fullWidth={true}>
           <FormLabel htmlFor="dateDepart">Date de départ</FormLabel>
-          <Input id="dateDepart"  name='dateDepart' type="date" onChange={this.handleInput} value={this.state.dateDepart}/>
+          <Input id="dateDepart" required={true} name='dateDepart' type="date" onChange={this.handleInput} value={d2} />
         </FormControl>
       </form>
+
     </Dialog>
   );
 }

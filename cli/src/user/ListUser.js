@@ -62,7 +62,7 @@ export default class ListUser extends Component {
   }
 
   handleAdd=(event)=>{
-    this.setState({isOpened:true})
+    this.setState({isOpened:true,editValue:{}})
   }
 
   dialogClose=()=>{
@@ -78,7 +78,7 @@ export default class ListUser extends Component {
       }else
       {
         const index=lesUtilisateurs.findIndex((user)=>{
-          return user.numero==p.numero;
+          return user.id==p.id;
         });
 
         lesUtilisateurs[index]=p;
@@ -94,7 +94,6 @@ export default class ListUser extends Component {
     const u=lesUtilisateurs.find((user)=>{
       return user.id==id;
     });
-    console.log(u);
     this.setState({
       modeEdit:true,
       isOpened:true,
@@ -119,7 +118,6 @@ export default class ListUser extends Component {
               <TableCell>Date d'arrivée</TableCell>
               <TableCell>Date de départ</TableCell>
               <TableCell>Bureau</TableCell>
-              <TableCell></TableCell>
               <TableCell></TableCell>
             </TableHead>
           <TableBody>
@@ -147,7 +145,7 @@ export default class ListUser extends Component {
                           { user.bureau ? user.bureau.numero: "Non Affecté" }
                         </TableCell>
                         <TableCell>
-                          <Button tag={user.id} onClick={this.handleDelete}   color={"primary"}><Icon>delete</Icon></Button>
+                          <Button tag={user.id} onClick={this.handleDelete} color={"primary"}><Icon>delete</Icon></Button>
                           <Button tag={user.id} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
                         </TableCell>
                       </TableRow>

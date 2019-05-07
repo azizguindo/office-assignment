@@ -48,7 +48,6 @@ export  default class AddBureau extends Component {
     componentWillReceiveProps(nextProps, nextContext) {
         if(nextProps.editValue!=undefined) {
             const val = nextProps.editValue;
-
             this.setState({
                 id: val.id,
                 numero: val.numero,
@@ -56,11 +55,10 @@ export  default class AddBureau extends Component {
                 statut: val.statut,
                 utilisateurs: val.utilisateurs,
                 editMode: nextProps.editMode
-
             });
         }
-
     }
+
     handleInput=(event)=>{
         const name=event.target.name;
         let value=event.target.value;
@@ -69,6 +67,7 @@ export  default class AddBureau extends Component {
         console.log(name,value)
 
     }
+
     onSubmit=(event)=>{
         const {numero,nbPlaces,statut,id}=this.state;
          this.props.saved({
@@ -81,6 +80,7 @@ export  default class AddBureau extends Component {
         },this.state.editMode);
         this.props.closed();
     }
+    
     render() {
         return(
             <Dialog open={this.props.opened}  fullScreen={true}>
@@ -118,11 +118,8 @@ export  default class AddBureau extends Component {
             </Dialog>
 
         );
-     
+
     }
 
 
 }
-
-
-

@@ -40,19 +40,9 @@ export default class EditUser extends Component{
 
 
   render() {
+    const {id}=this.props.match.params;
     return(
-      <Dialog open={this.props.opened}  fullScreen={true}>
-        <AppBar className={styles.appBar}>
-          <Toolbar>
-            <IconButton color="inherit" onClick={this.props.closed} aria-label="Close">
-              <Icon>close</Icon>
-            </IconButton>
-            <Button color="inherit" onClick={this.onSubmit}>
-              <Icon>save</Icon>
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <form  style={{margin:"10%"}}>
+        <form onSubmit={this.onSubmit} style={{width: "50%", marginLeft: "20%"}}>
           <FormControl margin="normal" error={false} fullWidth={true}>
             <InputLabel htmlFor="nom">Nom</InputLabel>
             <Input  id="nom" name="nom" type="text"    onChange={this.handleInput} value={this.state.nom}/>
@@ -81,7 +71,6 @@ export default class EditUser extends Component{
             <Input id="dateDepart"  name='dateDepart' type="date" onChange={this.handleInput} value={this.state.dateDepart}/>
           </FormControl>
         </form>
-      </Dialog>
     );
   }
 

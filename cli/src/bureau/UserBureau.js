@@ -113,7 +113,6 @@ componentDidMount () {
 }
 
 render() {
-  console.log(this.props.match.params.id);
   const {lesUtilisateurs,anchorEL}=this.state;
   return(
     <div>
@@ -127,14 +126,12 @@ render() {
     <TableCell>Date de départ</TableCell>
     <TableCell>Bureau</TableCell>
     <TableCell></TableCell>
-    <TableCell></TableCell>
     </TableHead>
     <TableBody>
     {
       lesUtilisateurs.map((user)=>{
         if(user.bureau !== null){
-          console.log(user);
-          if( user.bureau.id !== this.props.match.params.id){
+          if( user.bureau.id == this.props.match.params.id){
             return(
               <TableRow key={user.id}  style={{background:new Date(user.dateDepart) < new Date()?"red":""}} >
               <TableCell>
@@ -156,9 +153,6 @@ render() {
                   </TableCell>
                   <TableCell>
                   { user.bureau ? user.bureau.numero: "Non Affecté" }
-                  </TableCell>
-                  <TableCell>
-                  <Button tag={user.id} onClick={this.handleDelete}   color={"primary"}><Icon>delete</Icon></Button>
                   </TableCell>
                   </TableRow>);
                 }}

@@ -46,7 +46,6 @@ export default class ListBureau  extends Component{
 
     }
     componentWillMount() {
-        console.log("componentWillMount");
       try {
           Service.get(URL_BU_ALL)
               .then(data=>{
@@ -199,22 +198,19 @@ export default class ListBureau  extends Component{
     }
 
     test(){
-      let result =<TableCell>{arguments[0].nbPlacesOccupees}</TableCell>;
       let occupation = 0;
         this.state.lesUtilisateurs.map((user)=>{
-          if(user.bureau !== null){
+          if(user.bureau){
             if(user.bureau.id == arguments[0].id){
               occupation = occupation + user.statut.place
               const id =  arguments[0].id;
-              result = <TableCell><Link  to={`/bureauusers/${id}`}>{occupation }</Link></TableCell>
             }
           }
         })
-        return result;
+        return occupation;
 
     }
     render() {
-       console.log(this.state.lesUtilisateurs);
         const lesBureaux=(this.state.isSearch&&this.state.findItem.length!=0)?this.state.findItem:this.state.lesBureaux;
         const anchorEL=this.state.anchorEL;
         return(
@@ -240,9 +236,11 @@ export default class ListBureau  extends Component{
                                 <TableRow key={row.id}  style={{background:row.nbPlaces==0?"blue":""}} >
                                     <TableCell>{row.numero}</TableCell>
                                     <TableCell>{row.nbPlaces}</TableCell>
-                                    {this.test(row)}
+                                    <TableCell><Link  to={`/bureauusers/${row.id}`}>
+                                      {this.test(row)}
+                                    </Link></TableCell>
                                     <TableCell>{row.statut}</TableCell>
-                                    <TableCell><Badge showZero={true} color={row.nbPlaces==0?"secondary":""} badgeContent={row.nbPlaces}>
+                                    <TableCell><Badge showZero={true} color={row.nbPlaces==0?"secondary":""} badgeContent={row.nbPlaces-this.test(row)}>
                                         <Icon>mail</Icon>
                                     </Badge></TableCell>
                                     <TableCell>
@@ -270,6 +268,4 @@ export default class ListBureau  extends Component{
             </div>
         );
     }
-
-
 }

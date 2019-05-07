@@ -70,4 +70,5 @@ public class UtilisateurController  {
     public List<Utilisateur> getNotAssignedUsers(){
         return utilisateurRepository.findByBureauIsNull();
     }
+
 }
