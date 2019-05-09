@@ -41,37 +41,41 @@ export default class Affecter extends Component{
 
     }
     componentWillMount() {
-        if(this.state.opened)
         try {
             Service.get(URL_USER_ALL)
                 .then(data=>{
-                    this.setState({lesUtilisateurs:data.filter((user)=>{
-                        return user.nomBureau==null;
-                        })});
-                    console.log(data)
+                    this.setState({lesUtilisateurs:data});
+                    console.log("Affecter.componentWillMount()",data)
                 });
-
         }catch (e) {
             console.log("erreur",e.toString());
         }
     }
     componentWillReceiveProps(nextProps, nextContext) {
-        console.log("componentWillReceiveProps",nextProps.bureau)
-       this.setState({
-           opened:nextProps.opened,
-           bureau:nextProps.bureau,
-       })
+        if(nextProps.opened) {
+            console.log("componentWillReceiveProps", nextProps.bureau)
+            const {lesUtilisateurs} = this.state;
+            console.log("componentWillReceiveProps", lesUtilisateurs)
+            this.setState({
+                opened: nextProps.opened,
+                bureau: nextProps.bureau,
+                lesUtilisateurs: lesUtilisateurs.filter((user) => {
+                   console.log("ici", user.statut.place,nextProps.bureau.nbPlaces-nextProps.bureau.utilisateurs.reduce((count, user) => count + user.statut.place, 0))
+                    return user.nomBureau == null && user.statut.place<=(nextProps.bureau.nbPlaces-nextProps.bureau.utilisateurs.reduce((count, user) => count + user.statut.place, 0))
+                })
+            })
+        }
 
     }
     save=(event)=>{
 
         const select=this.state.select;
         select.bureau=this.state.bureau;
-
+        console.log("ici",select)
        Service.update(URL_USER_UPDATE+"/"+select.id,select,"PUT")
            .then(data=>{
                console.log(data)
-              this.closed(event)
+              //this.closed(event)
            }).catch(error=>{
                console.log(error)
        })
@@ -82,6 +86,7 @@ export default class Affecter extends Component{
             opened:false,
             select:null,
         })
+
     }
 
     onSelect=(event)=>{
@@ -120,7 +125,7 @@ export default class Affecter extends Component{
 
                     {
                         lesUtilisateurs.map((u,index)=>(
-                        <ListItem indice={index} key={index} onClick={this.toggle} style={{border:(select!=null&&select.id==u.id)?"2px":"0px"}} >
+                        <ListItem indice={index} key={index} onClick={this.toggle} style={{cursor:"pointer",border:(select!=null&&select.id==u.id)?"2px":"0px"}} >
 
                             <Avatar>
                                 <Icon>person</Icon>
