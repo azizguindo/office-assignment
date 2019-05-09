@@ -7,4 +7,5 @@ import ul.stage.officeassignment.model.Utilisateur;
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur,Long> {
 
+
 }

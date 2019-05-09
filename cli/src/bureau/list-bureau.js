@@ -14,8 +14,9 @@ import {
 } from "@material-ui/core";
 import AddBureau from "./add-bureau";
 import Service from "../service/Service";
-import {URL_BU_ADD, URL_BU_ALL, URL_BU_DELETE, URL_BU_UPDATE} from "../utils/Constant";
+import {URL_BU_ADD, URL_BU_ALL, URL_BU_DELETE, URL_BU_UPDATE, URL_USER_ALL} from "../utils/Constant";
 import {Link} from "react-router-dom";
+import Affecter from "../affecter/affecter";
 export default class ListBureau  extends Component{
 
     constructor(props) {
@@ -30,10 +31,12 @@ export default class ListBureau  extends Component{
             anchorEL:null,
             isSearch:false,
             isOpened:false,
+            openAffectDial:false,
             modeEdit:false,
             editValue:{},
             searchStyle:searchStyle,
-            findItem:[]
+            findItem:[],
+            bureauAffect:null,
         };
 
     }
@@ -59,6 +62,7 @@ export default class ListBureau  extends Component{
         const numero=event.currentTarget.getAttribute("tag");
 
         const lesBureaux=this.state.lesBureaux;
+
         const u=lesBureaux.find((user)=>{
 
             return user.numero==numero;
@@ -77,6 +81,7 @@ export default class ListBureau  extends Component{
     dialogClose=()=>{
         this.setState({isOpened:false})
     }
+
     save=(p,modeEdit)=>
     {
         const lesBureaux=this.state.lesBureaux;
@@ -105,6 +110,23 @@ export default class ListBureau  extends Component{
         this.setState({lesBureaux:lesBureaux.filter(item=> item.id!=id) })
         Service.update(URL_BU_DELETE+"/"+id,{},"DELETE")
     }
+    dialogCloseAffec=()=>{
+        this.setState({isOpened:false})
+    }
+    handleAffecte=(event)=>{
+        const id=event.currentTarget.getAttribute("tag");
+        const {lesBureaux}=this.state;
+        console.log(id)
+         const bureau=lesBureaux.find((bu)=>{
+             return bu.id==id;
+        })
+        this.setState({
+            openAffectDial:true,
+            bureauAffect:bureau
+        })
+        console.log("cliquez",bureau)
+    }
+
     onSortByEtat=(event)=>{
         this.setState({isSearch:true,findItem:[]});
         const sorted=event.currentTarget.getAttribute("sorted");
@@ -198,6 +220,11 @@ export default class ListBureau  extends Component{
                         <AddBureau editMode={this.state.modeEdit} editValue={this.state.editValue}  opened={this.state.isOpened} closed={this.dialogClose} saved={this.save}></AddBureau>
                     </div>
                 </div>
+                <div>
+                    <div>
+                        <Affecter  bureau={this.state.bureau}  opened={this.state.openAffectDial} closed={this.dialogCloseAffec} saved={this.saveAffect}></Affecter>
+                    </div>
+                </div>
                 <Table >
                     <TableHead style={{background:"beige"}}>
                         <TableCell>Numero<input style={{background:"beige",borderColor:"white",color:"black"}} onChange={this.searchChange}  type={"text"}/></TableCell>
@@ -225,7 +252,13 @@ export default class ListBureau  extends Component{
                                         <Tooltip title={"modifier"}>
                                             <Button tag={row.numero} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
                                         </Tooltip>
+                                        <Tooltip title={"Affecter"}>
+                                            <Button onClick={this.handleAffecte} disabled={row.utilisateurs.length==row.nbPlaces}>
+                                                <Icon>person_add</Icon>
+                                            </Button>
+                                        </Tooltip>
                                     </TableCell>
+
                                     <Menu anchorEl={anchorEL} open={Boolean(anchorEL)} >
                                         <MenuItem>l</MenuItem>
                                         <MenuItem>l</MenuItem>

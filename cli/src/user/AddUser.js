@@ -92,14 +92,14 @@ export default class AddUser extends Component{
 
   onSubmit=(event)=>{
     const {nom,prenom,nomStatut,dateArrivee,dateDepart,bureau,statut}=this.state;
-    alert(this.state.nomStatut);
+     console.log("AddUser.onSubmit",prenom,nom,nomStatut,dateArrivee,dateDepart,null)
     this.state.lesStatuts.map((statut1)=>
       {if(statut1.nom === nomStatut){
         this.props.saved({
           nom:nom,
           prenom:prenom,
           nomStatut:nomStatut,
-          bureau:bureau,
+          bureau:null,
           dateArrivee:dateArrivee,
           dateDepart:dateDepart,
           statut :statut1,

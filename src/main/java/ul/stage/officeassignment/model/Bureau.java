@@ -1,5 +1,7 @@
 package ul.stage.officeassignment.model;
 
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "offices")
 @EntityListeners(AuditingEntityListener.class)
+
 public class Bureau implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +30,7 @@ public class Bureau implements Serializable {
 
     @NotNull
     private Integer nbPlacesOccupees;
-
-    @OneToMany(mappedBy = "bureau")
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "bureau",cascade = CascadeType.ALL)
     private Collection<Utilisateur> utilisateurs;
 
     public Long getId() {

@@ -22,7 +22,9 @@ public class UtilisateurController  {
     //Get all users
     @GetMapping("/users")
     public List<Utilisateur> getAllUsers(){
+
         return utilisateurRepository.findAll();
+
     }
 
     //Get a user

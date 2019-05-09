@@ -1,5 +1,7 @@
 package ul.stage.officeassignment.model;
 
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -29,15 +31,23 @@ public class Utilisateur implements Serializable {
     @ManyToOne
     private Statut statut;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bureau_id")
+    @JsonBackReference
     private Bureau bureau;
+    @Transient
+    private String nomBureau;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateArrivee;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateDepart;
-
+    @JsonGetter("nomBureau")
+    public String getNomBureau()
+    {
+        return bureau!=null?bureau.getNumero():null;
+    }
     public Long getId() {
         return id;
     }
