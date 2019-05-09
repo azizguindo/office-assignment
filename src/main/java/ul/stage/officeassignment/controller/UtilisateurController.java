@@ -54,6 +54,7 @@ public class UtilisateurController  {
         utilisateur.setDateArrivee(utilisateurDetails.getDateArrivee());
         utilisateur.setDateDepart(utilisateurDetails.getDateDepart());
         utilisateur.setStatut(utilisateurDetails.getStatut());
+        utilisateur.setBureau(utilisateurDetails.getBureau());
         Utilisateur updatedUser = utilisateurRepository.save(utilisateur);
         return updatedUser;
     }

@@ -12,7 +12,7 @@ import {
     Toolbar
 } from "@material-ui/core";
 import Service from "../service/Service";
-import {URL_USER_ALL} from "../utils/Constant";
+import {URL_USER_ALL, URL_USER_UPDATE} from "../utils/Constant";
 import {ToggleButton, ToggleButtonGroup} from "@material-ui/lab";
 import TextField from "@material-ui/core/es/TextField/TextField";
 const styles = {
@@ -41,10 +41,13 @@ export default class Affecter extends Component{
 
     }
     componentWillMount() {
+        if(this.state.opened)
         try {
             Service.get(URL_USER_ALL)
                 .then(data=>{
-                    this.setState({lesUtilisateurs:data});
+                    this.setState({lesUtilisateurs:data.filter((user)=>{
+                        return user.nomBureau==null;
+                        })});
                     console.log(data)
                 });
 
@@ -53,7 +56,7 @@ export default class Affecter extends Component{
         }
     }
     componentWillReceiveProps(nextProps, nextContext) {
-        console.log("componentWillReceiveProps"+nextProps.bureau);
+        console.log("componentWillReceiveProps",nextProps.bureau)
        this.setState({
            opened:nextProps.opened,
            bureau:nextProps.bureau,
@@ -64,15 +67,21 @@ export default class Affecter extends Component{
 
         const select=this.state.select;
         select.bureau=this.state.bureau;
-        console.log("saved",this.state.bureau);
-        console.log("saved",this.state.select);
+
+       Service.update(URL_USER_UPDATE+"/"+select.id,select,"PUT")
+           .then(data=>{
+               console.log(data)
+              this.closed(event)
+           }).catch(error=>{
+               console.log(error)
+       })
 
     }
     closed=(event)=>{
-        this.setState({opened:false})
-        //this.state.history("/bureau/all");
-
-
+        this.setState({
+            opened:false,
+            select:null,
+        })
     }
 
     onSelect=(event)=>{

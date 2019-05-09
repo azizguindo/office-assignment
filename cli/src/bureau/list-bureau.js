@@ -42,7 +42,7 @@ export default class ListBureau  extends Component{
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
-
+        console.log("componentWillMount");
     }
     componentWillMount() {
         console.log("componentWillMount");
@@ -81,7 +81,6 @@ export default class ListBureau  extends Component{
     dialogClose=()=>{
         this.setState({isOpened:false})
     }
-
     save=(p,modeEdit)=>
     {
         const lesBureaux=this.state.lesBureaux;
@@ -126,7 +125,6 @@ export default class ListBureau  extends Component{
         })
         console.log("cliquez",bureau)
     }
-
     onSortByEtat=(event)=>{
         this.setState({isSearch:true,findItem:[]});
         const sorted=event.currentTarget.getAttribute("sorted");
@@ -161,7 +159,6 @@ export default class ListBureau  extends Component{
         console.log("onSortByEtat",value)
         event.currentTarget.setAttribute("sorted",value);
     }
-
     onSortByPlaces=(event)=>{
         this.setState({isSearch:false,findItem:[]});
         const sorted=event.currentTarget.getAttribute("sorted");
@@ -208,6 +205,10 @@ export default class ListBureau  extends Component{
         console.log(data);
         this.setState({isSearch:true,findItem:data});
     }
+    evalOccupation(utilisateurs){
+        console.log("evalOccupation",utilisateurs.reduce((count,user)=>user.statut.nbPlaces+count,0))
+       return utilisateurs.reduce((count,user)=>user.statut.place+count,0)
+    }
     render() {
        // const {lesBureaux,anchorEL}=this.state;
         const lesBureaux=(this.state.isSearch&&this.state.findItem.length!=0)?this.state.findItem:this.state.lesBureaux;
@@ -222,7 +223,7 @@ export default class ListBureau  extends Component{
                 </div>
                 <div>
                     <div>
-                        <Affecter  bureau={this.state.bureau}  opened={this.state.openAffectDial} closed={this.dialogCloseAffec} saved={this.saveAffect}></Affecter>
+                        <Affecter  bureau={this.state.bureauAffect}  opened={this.state.openAffectDial} closed={this.dialogCloseAffec} saved={this.saveAffect}></Affecter>
                     </div>
                 </div>
                 <Table >
@@ -237,12 +238,12 @@ export default class ListBureau  extends Component{
                     <TableBody>
                         {
                             lesBureaux.map((row)=>(
-                                <TableRow key={row.id}  style={{background:row.nbPlaces-row.utilisateurs.length==0?"blue":""}} >
+                                <TableRow key={row.id}  style={{background:row.nbPlaces-this.evalOccupation(row.utilisateurs)==0?"blue":""}} >
                                     <TableCell>{row.numero}</TableCell>
                                     <TableCell>{row.nbPlaces}</TableCell>
-                                    <TableCell>{row.utilisateurs.length}details</TableCell>
+                                    <TableCell>{this.evalOccupation(row.utilisateurs)} details</TableCell>
                                     <TableCell>{row.statut}</TableCell>
-                                    <TableCell><Badge showZero={true} color={row.nbPlaces-row.utilisateurs.length==0?"secondary":""} badgeContent={row.nbPlaces-row.utilisateurs.length}>
+                                    <TableCell><Badge showZero={true} color={row.nbPlaces-this.evalOccupation(row.utilisateurs)==0?"secondary":""} badgeContent={row.nbPlaces-row.utilisateurs.length}>
                                         <Icon>mail</Icon>
                                     </Badge></TableCell>
                                     <TableCell>
@@ -253,7 +254,7 @@ export default class ListBureau  extends Component{
                                             <Button tag={row.numero} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
                                         </Tooltip>
                                         <Tooltip title={"Affecter"}>
-                                            <Button onClick={this.handleAffecte} disabled={row.utilisateurs.length==row.nbPlaces}>
+                                            <Button  tag={row.id} onClick={this.handleAffecte} disabled={row.utilisateurs.length==row.nbPlaces}>
                                                 <Icon>person_add</Icon>
                                             </Button>
                                         </Tooltip>
