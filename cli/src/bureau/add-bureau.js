@@ -37,14 +37,7 @@ export  default class AddBureau extends Component {
         };
 
     }
-    /*onSubmit=(event)=>{
-        const {numero,nbPlaces,occupe,statut,hasError}=this.state;
-        if(numero.match("[A-C]([0-9]{1,)")==null) {
-            this.setState({hasError: true});
-            this.setState({message:"veuillez remplir les champs correctemnt"});
-        }
-
-    }*/
+    
     componentWillReceiveProps(nextProps, nextContext) {
         if(nextProps.editValue!=undefined) {
             const val = nextProps.editValue;
@@ -80,7 +73,7 @@ export  default class AddBureau extends Component {
         },this.state.editMode);
         this.props.closed();
     }
-    
+
     render() {
         return(
             <Dialog open={this.props.opened}  fullScreen={true}>
@@ -103,12 +96,10 @@ export  default class AddBureau extends Component {
                 <InputLabel htmlFor="numero">Numero</InputLabel>
                 <Input  name="numero" id="numero"  onChange={this.handleInput} type="text" value={this.state.numero}/>
                 </FormControl>
-
                 <FormControl margin="normal" fullWidth={true}>
                 <InputLabel htmlFor="nbPlaces">Places</InputLabel>
-                <Input  id="nbPlaces" name="nbPlaces" type="number" onChange={this.handleInput} value={this.state.nbPlaces}/>
+                <Input  id="nbPlaces" name="nbPlaces" type="number" inputProps={{ min: 1}} onChange={this.handleInput} value={this.state.nbPlaces}/>
                 </FormControl>
-
                 <FormControl margin="normal" fullWidth={true}>
                     <InputLabel htmlFor="statut">Statut</InputLabel>
                     <Input id="statut" name='statut' type="text" onChange={this.handleInput} value={this.state.statut}/>

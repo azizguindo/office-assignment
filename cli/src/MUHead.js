@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
 import {Icon,Fab} from "@material-ui/core";
@@ -90,9 +88,6 @@ function MHead(props) {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton  className={classes.menuButton} color="inherit" aria-label="Open drawer">
-            <Icon className={classes.icon}>menu</Icon>
-          </IconButton>
           <div style={{marginLeft:"2%"}}>
             <Fab color={"secondary"}><Link to={"/user/all"}><Icon>people</Icon></Link></Fab>
             <Fab color={"secondary"}><Link to={"/bureau/all"}><Icon>work</Icon></Link></Fab>

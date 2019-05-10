@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UtilisateurController  {
 
     @Autowired
@@ -51,6 +51,7 @@ public class UtilisateurController  {
         utilisateur.setDateArrivee(utilisateurDetails.getDateArrivee());
         utilisateur.setDateDepart(utilisateurDetails.getDateDepart());
         utilisateur.setStatut(utilisateurDetails.getStatut());
+        utilisateur.setBureau(utilisateurDetails.getBureau());
         Utilisateur updatedUser = utilisateurRepository.save(utilisateur);
         return updatedUser;
     }
