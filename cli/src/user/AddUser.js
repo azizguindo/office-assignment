@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import { URL_ST_ALL} from "../utils/Constant";
 import Service from "../service/Service";
+import { Form, Field } from 'react-final-form';
 
 const styles = {
   appBar: {
@@ -150,8 +151,8 @@ export default class AddUser extends Component{
             </Button>
           </Toolbar>
         </AppBar>
-        <form  style={{margin:"10%"}}>
-          <FormControl margin="normal" error={false} fullWidth={true}>
+        {/*<form  style={{margin:"10%"}}>
+          <FormControl margin="normal" error={false} fullWidth={false} required={true}>
             <InputLabel htmlFor="nom">Nom</InputLabel>
             <Input  id="nom" name="nom" type="text"    onChange={this.handleInput} value={this.state.nom} />
           </FormControl>
@@ -179,6 +180,50 @@ export default class AddUser extends Component{
             <Input id="dateDepart" required={true} name='dateDepart' type="date" onChange={this.handleInput} value={d2} />
           </FormControl>
         </form>
+      */}
+
+      <Form
+    onSubmit={this.onSubmit}
+  //  validate={validate}
+    render={({ handleSubmit, pristine, invalid }) => (
+      <form style={{margin:"10%"}} onSubmit={handleSubmit}>
+        <div>
+          <label>Nom</label>
+          <Field name="nom" component="input" placeholder="Nom" />
+        </div>
+
+        <div>
+          <label>Prenom</label>
+          <Field name="prenom" component="input" placeholder="Prenom" />
+        </div>
+
+        <div>
+                    <label>Statut</label>
+                    <Field name="nomStatut" component="select">
+                      <option />
+                      <option value="Professeur">Professeur</option>
+                      <option value="PhD">PhD</option>
+                      <option value="PostDoc">PostDoc</option>
+                      <option value="Stagiaire">Stagiaire</option>
+                      <option value="Admin">Admin</option>
+                    </Field>
+                  </div>
+
+              <div>
+                    <label>Date d'arrivée</label>
+                    <Field name="dateArrivee" component="input" placeholder="Date d'arrivée" type="date"/>
+                  </div>
+                  <div>
+                        <label>Date de départ</label>
+                        <Field name="dateDepart" component="input" placeholder="Date de départ" type="date"/>
+                      </div>
+
+        <button type="submit" disabled={pristine || invalid}>
+          Submit
+        </button>
+      </form>
+    )}
+    />
       </Dialog>
     );
   }

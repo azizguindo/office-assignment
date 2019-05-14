@@ -283,10 +283,10 @@ export default class ListBureau  extends Component{
                   <TableCell>{row.statut}</TableCell>
                   <TableCell><Badge showZero={true} color={row.nbPlaces==0?"secondary":""} badgeContent={row.nbPlaces-this.test(row).occupation}><Icon>mail</Icon></Badge></TableCell>
                   <TableCell>
-                    <Tooltip title={"modifier"}>
+                    <Tooltip title={"Modifier"}>
                       <Button tag={row.numero} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
                     </Tooltip>
-                    <Tooltip title={"affecter"}>
+                    <Tooltip title={"Affecter"}>
                       <Button tag={row.id} disabled={this.test(row).occupation==row.nbPlaces} onClick={this.handleAssign} color={"primary"}><Icon>person_add</Icon></Button>
                   </Tooltip>
                     <Progress  percent={~~((this.test(row).occupation/row.nbPlaces)*100)} type="circle" width={40}   />

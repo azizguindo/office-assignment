@@ -37,7 +37,7 @@ export  default class AddBureau extends Component {
         };
 
     }
-    
+
     componentWillReceiveProps(nextProps, nextContext) {
         if(nextProps.editValue!=undefined) {
             const val = nextProps.editValue;
@@ -65,7 +65,7 @@ export  default class AddBureau extends Component {
         const {numero,nbPlaces,statut,id}=this.state;
          this.props.saved({
              id:id,
-            numero:numero,
+             numero:numero,
              nbPlaces:nbPlaces,
              nbPlacesOccupees:0,
              utilisateurs:(this.state.editMode?this.state.utilisateurs:[]),
