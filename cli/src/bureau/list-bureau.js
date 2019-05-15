@@ -2,8 +2,6 @@ import React,{Component} from 'react'
 import {
   Badge,
   Button, Icon,
-  List,
-  ListItem,
   Menu,
   MenuItem,
   Table,

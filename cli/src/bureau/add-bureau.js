@@ -1,18 +1,17 @@
 import React,{Component} from 'react'
-import PropTypes from 'prop-types'
 import {
     AppBar,
     Button,
     Dialog,
-    FormControl,
     Icon,
     IconButton,
-    Input,
-    InputLabel,
-    Snackbar,
-    Toolbar
+    Toolbar,
+    Grid,
+    MenuItem
 } from "@material-ui/core";
 
+import { Form, Field } from 'react-final-form';
+import {TextField,Select} from 'final-form-material-ui';
 const styles = {
     appBar: {
         position: 'relative',
@@ -35,7 +34,6 @@ export  default class AddBureau extends Component {
             editMode:false,
             editValue:{}
         };
-
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
@@ -55,21 +53,35 @@ export  default class AddBureau extends Component {
     handleInput=(event)=>{
         const name=event.target.name;
         let value=event.target.value;
-
         this.setState({[name]:value});
         console.log(name,value)
 
     }
 
-    onSubmit=(event)=>{
-        const {numero,nbPlaces,statut,id}=this.state;
+    validate=(values)=>{
+      const errors = {};
+      if (!values.numero) {
+        errors.numero = 'Veuillez entrer un numero';
+      } else if (values.numero.length != 4) {
+        errors.numero= "Le numero doit avoir 4 caracteres (A/B/C suivi d'un nombre a 3 chiffres)";
+      }
+
+      if (!values.places) {
+        errors.places= 'Veuillez entrer un nombre de places';
+      } else if (values.places< 1) {
+        errors.places= 'Au moins une place';
+      }
+      return errors;
+    }
+
+    onSubmit=(values)=>{
+        const {id}=this.state;
          this.props.saved({
              id:id,
-             numero:numero,
-             nbPlaces:nbPlaces,
+             numero:values.numero,
+             nbPlaces:values.places,
              nbPlacesOccupees:0,
-             utilisateurs:(this.state.editMode?this.state.utilisateurs:[]),
-            statut:statut
+            statut:values.statut
         },this.state.editMode);
         this.props.closed();
     }
@@ -88,24 +100,59 @@ export  default class AddBureau extends Component {
                         </Button>
                     </Toolbar>
                 </AppBar>
-            <form  style={{margin:"10%"}}>
-                <Snackbar open={this.state.hasError}
-                message={this.state.message}
-                />
-                <FormControl margin="normal" fullWidth={true}>
-                <InputLabel htmlFor="numero">Numero</InputLabel>
-                <Input  name="numero" id="numero"  onChange={this.handleInput} type="text" value={this.state.numero}/>
-                </FormControl>
-                <FormControl margin="normal" fullWidth={true}>
-                <InputLabel htmlFor="nbPlaces">Places</InputLabel>
-                <Input  id="nbPlaces" name="nbPlaces" type="number" inputProps={{ min: 1}} onChange={this.handleInput} value={this.state.nbPlaces}/>
-                </FormControl>
-                <FormControl margin="normal" fullWidth={true}>
-                    <InputLabel htmlFor="statut">Statut</InputLabel>
-                    <Input id="statut" name='statut' type="text" onChange={this.handleInput} value={this.state.statut}/>
-                </FormControl>
-
-            </form>
+                <Form
+                  onSubmit = {this.onSubmit}
+                  initialValues={{numero:this.state.numero,places:this.state.nbPlaces,statut:this.state.statut}}
+                  validate={this.validate}
+                  render={({ handleSubmit, reset, submitting, pristine, values }) => (
+                    <form  onSubmit={handleSubmit} style={{margin:"10%"}}>
+                      <Grid item style={{ marginTop: 16 }}>
+                      <Field
+                        fullWidth
+                        required
+                        name="numero"
+                        component={TextField}
+                        type="text"
+                        label="Numéro"
+                        inputProps={{maxlength:"4"}}
+                        />
+                      </Grid>
+                      <Grid item style={{ marginTop: 16 }}>
+                      <Field
+                        fullWidth
+                        required
+                        name="places"
+                        component={TextField}
+                        type="number"
+                        label="Places"
+                      />
+                    </Grid>
+                    <Grid item style={{ marginTop: 16 }}>
+                      <Field
+                        fullWidth
+                        required
+                        name="statut"
+                        component={Select}
+                        label="Statut"
+                        formControlProps={{ fullWidth: true }}
+                        >
+                        <MenuItem value={"Standard"}>Standard</MenuItem>
+                        <MenuItem value={"ZRR"}>ZRR</MenuItem>
+                      </Field>
+                    </Grid>
+                      <Grid item style={{ marginTop: 16 }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                          disabled={submitting}
+                          >
+                          Submit
+                        </Button>
+                      </Grid>
+                    </form>
+                  )}
+                  />
             </Dialog>
 
         );

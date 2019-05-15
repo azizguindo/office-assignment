@@ -12,8 +12,7 @@ import {
     Toolbar
 } from "@material-ui/core";
 import Service from "../service/Service";
-import {URL_USER_ALL, URL_USER_UPDATE, URL_USER_NOT_AFF} from "../utils/Constant";
-import {ToggleButton, ToggleButtonGroup} from "@material-ui/lab";
+import {URL_USER_UPDATE, URL_USER_NOT_AFF} from "../utils/Constant";
 import TextField from "@material-ui/core/es/TextField/TextField";
 const styles = {
     appBar: {
@@ -47,7 +46,6 @@ export default class Affecter extends Component{
             Service.get(URL_USER_NOT_AFF)
                 .then(data=>{
                     this.setState({lesUtilisateurs:data});
-                    console.log("Affecter.componentWillMount()",data)
                 });
         }catch (e) {
             console.log("erreur",e.toString());
@@ -56,7 +54,6 @@ export default class Affecter extends Component{
 
     componentWillReceiveProps(nextProps, nextContext) {
         if(nextProps.opened) {
-            const {lesUtilisateurs} = this.state;
             this.setState({opened: nextProps.opened, bureau: nextProps.bureau});
         }
     }
@@ -95,7 +92,7 @@ export default class Affecter extends Component{
 }
 
     render() {
-        const {lesUtilisateurs,bureau,select}=this.state;
+        const {lesUtilisateurs,select}=this.state;
         return(
             <Dialog open={this.state.opened} fullScreen={true}>
                 <AppBar className={styles.appBar}>
@@ -123,7 +120,7 @@ export default class Affecter extends Component{
                             </Avatar>
                             <ListItemText primary={u.nom+" "+u.prenom+"    ("+u.statut.nom+")"} secondary={"Place:"+u.statut.place}  >
                             </ListItemText>
-                        </ListItem> 
+                        </ListItem>
 
                     ))}
                 </List>

@@ -14,7 +14,7 @@ export default class Service {
       throw new Error(error.toString());
     })
   }
-  
+
   static update(url,data=[],methode='POST'){
     return  fetch(url,{
       mode:"cors",

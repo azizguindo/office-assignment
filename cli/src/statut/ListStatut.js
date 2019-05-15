@@ -1,24 +1,12 @@
 import React,{Component} from 'react'
 import {
-  Badge,
-  Button,
-  FormControl,
-  Icon,
-  Input,
-  InputLabel, Menu, MenuItem,
-  Snackbar,
   Table,
   TableBody,
   TableCell,
-  TableHead, TableRow, Tooltip
+  TableHead, TableRow
 } from "@material-ui/core";
 import Service from "../service/Service";
-import {
-  URL_ST_ADD, URL_ST_ALL, URL_ST_UPDATE,
-  URL_USER_ADD,
-  URL_USER_ALL, URL_USER_DELETE,
-  URL_USER_UPDATE,URL_BU_ALL
-} from "../utils/Constant";
+import { URL_ST_ALL } from "../utils/Constant";
 
 export default class ListStatut extends Component {
 

@@ -3,17 +3,21 @@ import {
   AppBar,
   Button,
   Dialog,
-  FormControl,
-  FormLabel, Icon, IconButton,
-  Input,
-  InputLabel,
+  Icon,
+  IconButton,
   MenuItem,
-  Select,
-  Toolbar
+  Toolbar,
+  Grid
 } from "@material-ui/core";
 import { URL_ST_ALL} from "../utils/Constant";
 import Service from "../service/Service";
 import { Form, Field } from 'react-final-form';
+import {TextField,Select} from 'final-form-material-ui';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  DatePicker,
+} from 'material-ui-pickers';
 
 const styles = {
   appBar: {
@@ -31,7 +35,6 @@ export default class AddUser extends Component{
     this.state={
       nom:"",
       prenom:"",
-      email:"",
       nomStatut:"",
       bureau:"",
       dateArrivee:new Date(),
@@ -54,7 +57,6 @@ export default class AddUser extends Component{
 
   componentWillReceiveProps(nextProps, nextContext) {
     const val=nextProps.editValue;
-    console.log(this.state);
     this.setState( {
       nom:val.nom,
       prenom:val.prenom ,
@@ -80,6 +82,28 @@ export default class AddUser extends Component{
     }
   }
 
+  DatePickerWrapper(props) {
+    const {
+      input: { name, onChange, value, ...restInput },
+      meta,
+      ...rest
+    } = props;
+    const showError =
+    ((meta.submitError && !meta.dirtySinceLastSubmit) || meta.error) &&
+    meta.touched;
+
+    return (
+      <DatePicker
+        {...rest}
+        name={name}
+        helperText={showError ? meta.error || meta.submitError : undefined}
+        error={showError}
+        inputProps={restInput}
+        onChange={onChange}
+        value={value == '' ? null : value}
+        />
+    );
+  }
 
   handleInput=(event)=>{
     const name=event.target.name;
@@ -87,17 +111,16 @@ export default class AddUser extends Component{
     this.setState({[name]:value});
   }
 
-  onSubmit=(event)=>{
-    const {nom,prenom,nomStatut,dateArrivee,dateDepart}=this.state;
+  onSubmit=(values)=>{
     this.state.lesStatuts.map((statut1)=>{
-      if(statut1.nom === nomStatut){
+      if(statut1.nom == values.nomStatut){
         this.props.saved({
-          nom:nom.charAt(0).toUpperCase() + nom.slice(1),
-          prenom:prenom.charAt(0).toUpperCase() + prenom.slice(1),
-          nomStatut:nomStatut,
+          nom:values.nom.charAt(0).toUpperCase() + values.nom.slice(1),
+          prenom:values.prenom.charAt(0).toUpperCase() + values.prenom.slice(1),
+          nomStatut:values.nomStatut,
           bureau:null,
-          dateArrivee:dateArrivee,
-          dateDepart:dateDepart,
+          dateArrivee:values.dateArrivee,
+          dateDepart:values.dateDepart,
           statut :statut1,
           id: this.state.id,
         },this.state.editMode);
@@ -109,36 +132,32 @@ export default class AddUser extends Component{
     })
   }
 
+  validate=(values)=>{
+    const errors = {};
+    if (!values.nom) {
+      errors.nom = 'Veuillez entrer un nom';
+    } else if (values.nom.length < 2) {
+      errors.nom= 'Au moins de caractères';
+    } else if(!new RegExp("^([a-zA-Z'àâéèêôùûçÀÂÉÈÔÙÛÇ-]{1,30})$","g").test(values.nom)){
+      errors.nom = 'Nom invalide'
+    }
+
+    if (!values.prenom) {
+      errors.prenom= 'Veuillez entrer un prenom';
+    } else if (values.prenom.length < 2) {
+      errors.prenom= 'Au moins de caractères';
+    } else if(!new RegExp("^([a-zA-Z'àâéèêôùûçÀÂÉÈÔÙÛÇ-]{1,30})$","g").test(values.prenom)){
+      errors.prenom = 'Prenom invalide'
+    }
+
+    if(values.dateArrivee>values.dateDepart){
+      errors.dateArrivee= "La date d'arrivée doit être avant la date de départ";
+      errors.dateDepart= "La date d'arrivée doit être avant la date de départ";
+    }
+    return errors;
+  }
 
   render() {
-    let d1= "";
-    if(this.state.dateArrivee){
-      this.state.dateArrivee = new Date(this.state.dateArrivee);
-      d1 = String(this.state.dateArrivee.getFullYear())+'-';
-      if(this.state.dateArrivee.getMonth()+1<10){
-        d1 = d1 + '0';
-      }
-      d1 = d1 + String(this.state.dateArrivee.getMonth()+1)+'-';
-      if(this.state.dateArrivee.getDate()<10){
-        d1 = d1 + '0';
-      }
-      d1 = d1 + String(this.state.dateArrivee.getDate());
-    }
-
-    let d2= "";
-    if(this.state.dateDepart){
-      this.state.dateDepart = new Date(this.state.dateDepart);
-      d2 = String(this.state.dateDepart.getFullYear())+'-';
-      if(this.state.dateDepart.getMonth()+1<10){
-        d2 = d2 + '0';
-      }
-      d2 = d2 + String(this.state.dateDepart.getMonth()+1)+'-';
-      if(this.state.dateDepart.getDate()<10){
-        d2 = d2 + '0';
-      }
-      d2 = d2 + String(this.state.dateDepart.getDate());
-    }
-
     return(
       <Dialog open={this.props.opened}  fullScreen={true}>
         <AppBar className={styles.appBar}>
@@ -146,86 +165,78 @@ export default class AddUser extends Component{
             <IconButton color="inherit" onClick={this.props.closed} aria-label="Close">
               <Icon>close</Icon>
             </IconButton>
-            <Button color="inherit" onClick={this.onSubmit}>
+            <Button color="inherit" onClick={this.onSubmit1}>
               <Icon>save</Icon>
             </Button>
           </Toolbar>
         </AppBar>
-        {/*<form  style={{margin:"10%"}}>
-          <FormControl margin="normal" error={false} fullWidth={false} required={true}>
-            <InputLabel htmlFor="nom">Nom</InputLabel>
-            <Input  id="nom" name="nom" type="text"    onChange={this.handleInput} value={this.state.nom} />
-          </FormControl>
-          <FormControl margin="normal" error={false} fullWidth={true}>
-            <InputLabel htmlFor="prenom">Prénom</InputLabel>
-            <Input  id="prenom" name="prenom" type="text"   onChange={this.handleInput} value={this.state.prenom}/>
-          </FormControl>
-          <FormControl margin="normal" fullWidth={true}>
-            <InputLabel htmlFor="statut">Statut</InputLabel>
-            <Select name={"nomStatut"} id={"nomStatut"} value={this.state.nomStatut} onChange={this.handleInput}>
-              <em>Veuillez choisir un statut</em>
-              <MenuItem value={"Professeur"}>Professeur</MenuItem>
-              <MenuItem value={"PhD"}>PhD</MenuItem>
-              <MenuItem value={"PostDoc"}>PostDoc</MenuItem>
-              <MenuItem value={"Stagiaire"}>Stagiaire</MenuItem>
-              <MenuItem value={"Admin"}>Admin</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl margin="normal" fullWidth={true}>
-            <FormLabel htmlFor="dateArrivee">Date d'arrivée</FormLabel>
-            <Input id="dateArrivee" required={true} name='dateArrivee' type="date" onChange={this.handleInput} value={d1} />
-          </FormControl>
-          <FormControl margin="normal" fullWidth={true}>
-            <FormLabel htmlFor="dateDepart">Date de départ</FormLabel>
-            <Input id="dateDepart" required={true} name='dateDepart' type="date" onChange={this.handleInput} value={d2} />
-          </FormControl>
-        </form>
-      */}
+        <Form
+          onSubmit = {this.onSubmit}
+          initialValues={{nom : this.state.nom,prenom: this.state.prenom,nomStatut:this.state.nomStatut, dateArrivee : this.state.dateArrivee,dateDepart : this.state.dateDepart}}
+          validate={this.validate}
+          render={({ handleSubmit, reset, submitting, pristine, values }) => (
+            <form onSubmit={handleSubmit} style={{margin:"10%"}}>
+              <Field
+                fullWidth
+                required
+                name="nom"
+                component={TextField}
+                type="text"
+                label="Nom"
+                />
+              <Field
+                fullWidth
+                required
+                name="prenom"
+                component={TextField}
+                type="text"
+                label="Prenom"
+                />
 
-      <Form
-    onSubmit={this.onSubmit}
-  //  validate={validate}
-    render={({ handleSubmit, pristine, invalid }) => (
-      <form style={{margin:"10%"}} onSubmit={handleSubmit}>
-        <div>
-          <label>Nom</label>
-          <Field name="nom" component="input" placeholder="Nom" />
-        </div>
+              <Field
+                fullWidth
+                name="nomStatut"
+                component={Select}
+                label="Statut"
+                formControlProps={{ fullWidth: true }}
+                >
+                <MenuItem value={"Professeur"}>Professeur</MenuItem>
+                <MenuItem value={"PhD"}>PhD</MenuItem>
+                <MenuItem value={"PostDoc"}>PostDoc</MenuItem>
+                <MenuItem value={"Stagiaire"}>Stagiaire</MenuItem>
+                <MenuItem value={"Admin"}>Admin</MenuItem>
+              </Field>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Field
+                  fullWidth
+                  name="dateArrivee"
+                  component={this.DatePickerWrapper}
+                  label="Date d'arrivée"
+                  />
 
-        <div>
-          <label>Prenom</label>
-          <Field name="prenom" component="input" placeholder="Prenom" />
-        </div>
+                <Field
+                  fullWidth
+                  name="dateDepart"
+                  component={this.DatePickerWrapper}
+                  label="Date de départ"
+                  />
+              </MuiPickersUtilsProvider>
+              <Grid item style={{ marginTop: 16 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={submitting}
+                  >
+                  Submit
+                </Button>
+              </Grid>
+            </form>)}
+            />
 
-        <div>
-                    <label>Statut</label>
-                    <Field name="nomStatut" component="select">
-                      <option />
-                      <option value="Professeur">Professeur</option>
-                      <option value="PhD">PhD</option>
-                      <option value="PostDoc">PostDoc</option>
-                      <option value="Stagiaire">Stagiaire</option>
-                      <option value="Admin">Admin</option>
-                    </Field>
-                  </div>
 
-              <div>
-                    <label>Date d'arrivée</label>
-                    <Field name="dateArrivee" component="input" placeholder="Date d'arrivée" type="date"/>
-                  </div>
-                  <div>
-                        <label>Date de départ</label>
-                        <Field name="dateDepart" component="input" placeholder="Date de départ" type="date"/>
-                      </div>
+        </Dialog>
+      );
+    }
 
-        <button type="submit" disabled={pristine || invalid}>
-          Submit
-        </button>
-      </form>
-    )}
-    />
-      </Dialog>
-    );
   }
-
-}

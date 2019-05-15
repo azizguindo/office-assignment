@@ -41,9 +41,11 @@ export default class ListUser extends Component {
   }
 
   handleDelete=(event)=>{
+
     const id=event.currentTarget.getAttribute("tag");
+alert(id);
     const {lesUtilisateurs}=this.state;
-    this.setState({lesUtilisateurs:lesUtilisateurs.filter(item=> item.id!==id) })
+    this.setState({lesUtilisateurs:lesUtilisateurs.filter(item=> item.id!=id) })
     Service.update(URL_USER_DELETE+"/"+id,{},"DELETE")
   }
 
@@ -65,14 +67,14 @@ export default class ListUser extends Component {
 
   save=(p,modeEdit)=>{
     const lesUtilisateurs=this.state.lesUtilisateurs
-    Service.update(modeEdit===false?URL_USER_ADD:(URL_USER_UPDATE+"/"+p.id),p,modeEdit?"PUT":"POST")
+    Service.update(modeEdit==false?URL_USER_ADD:(URL_USER_UPDATE+"/"+p.id),p,modeEdit?"PUT":"POST")
     .then(data=>{
-      if(modeEdit===false) {
+      if(modeEdit==false) {
         lesUtilisateurs.push(p);
       }else
       {
         const index=lesUtilisateurs.findIndex((user)=>{
-          return user.id===p.id;
+          return user.id==p.id;
         });
         lesUtilisateurs[index]=p;
       }
@@ -127,7 +129,9 @@ export default class ListUser extends Component {
                   <TableCell>{String(new Date(user.dateArrivee).getDate())+'/'+String(new Date(user.dateArrivee).getMonth()+1)+'/'+String(new Date(user.dateArrivee).getFullYear())}</TableCell>
                   <TableCell>{String(new Date(user.dateDepart).getDate())+'/'+String(new Date(user.dateDepart).getMonth()+1)+'/'+String(new Date(user.dateDepart).getFullYear())}</TableCell>
                   <TableCell>{ user.bureau ? user.bureau.numero: "Non Affecté" }</TableCell>
-                  <TableCell><Button tag={user.id} onClick={this.handleDelete} color={"primary"}><Icon>delete</Icon></Button><Button tag={user.id} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button></TableCell>
+                  <TableCell><Button tag={user.id} onClick={this.handleDelete} color={"primary"}><Icon>delete</Icon></Button>
+                  <Button tag={user.id} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
+                </TableCell>
                 </TableRow>
               ))
             }

@@ -51,7 +51,7 @@ console.log(this.state.lesUtilisateurs);
   handleDelete=(event)=>{
     const id=event.currentTarget.getAttribute("tag");
     const {lesUtilisateurs}=this.state;
-    this.setState({lesUtilisateurs:lesUtilisateurs.filter(item=> item.id!==id) })
+    this.setState({lesUtilisateurs:lesUtilisateurs.filter(item=> item.id!=id) })
     Service.update(URL_USER_DELETE+"/"+id,{},"DELETE")
   }
 
@@ -71,14 +71,14 @@ console.log(this.state.lesUtilisateurs);
 
   save=(p,modeEdit)=>{
     const lesUtilisateurs=this.state.lesUtilisateurs
-    Service.update(modeEdit===false?URL_USER_ADD:(URL_USER_UPDATE+"/"+p.id),p,modeEdit?"PUT":"POST")
+    Service.update(modeEdit==false?URL_USER_ADD:(URL_USER_UPDATE+"/"+p.id),p,modeEdit?"PUT":"POST")
     .then(data=>{
-      if(modeEdit===false) {
+      if(modeEdit==false) {
         lesUtilisateurs.push(p);
       }else
       {
         const index=lesUtilisateurs.findIndex((user)=>{
-          return user.numero===p.numero;
+          return user.numero==p.numero;
         });
 
         lesUtilisateurs[index]=p;
@@ -92,7 +92,7 @@ console.log(this.state.lesUtilisateurs);
     const lesUtilisateurs =this.state.lesUtilisateurs;
     const id=event.currentTarget.getAttribute("tag");
     const u=lesUtilisateurs.find((user)=>{
-      return user.id===id;
+      return user.id==id;
     });
     console.log(u);
     this.setState({
@@ -102,9 +102,7 @@ console.log(this.state.lesUtilisateurs);
     })
   }
 
-  componentDidMount () {
-    // const{id} =this.props.match.params;
-  }
+  
 
   handleUnAssign=(event)=>{
     const id=event.currentTarget.getAttribute("tag");
@@ -135,9 +133,7 @@ console.log(this.state.lesUtilisateurs);
           <TableBody>
             {
               lesUtilisateurs.map((user)=>{
-                if(user.bureau !== null){
-                  // console.log(user.bureau);
-                  // console.log(user.bureau.id == this.props.match.params.id);
+                if(user.bureau != null){
                   if( user.bureau.id == this.props.match.params.id){
                     return(
                       <TableRow key={user.id}  style={{background:new Date(user.dateDepart) < new Date()?"red":""}} >
