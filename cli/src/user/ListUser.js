@@ -1,32 +1,29 @@
 import React,{Component} from 'react'
 import {
-  Badge,
   Button,
-  FormControl,
   Icon,
-  Input,
-  InputLabel, Menu, MenuItem,
-  Snackbar,
   Table,
   TableBody,
   TableCell,
-  TableHead, TableRow, Tooltip
+  TableHead, TableRow,Tooltip
 } from "@material-ui/core";
+import CSVReader from "react-csv-reader";
 import AddUser from "./AddUser";
-import EditUser from"./EditUser";
 import Service from "../service/Service";
 import {
-  URL_ST_ADD, URL_ST_ALL, URL_ST_UPDATE,
   URL_USER_ADD,
   URL_USER_ALL, URL_USER_DELETE,
-  URL_USER_UPDATE
+  URL_ST_ALL,
+  URL_USER_UPDATE, URL_BU_ALL, URL_USER_GET_ONE, URL_ST_GET_ONE, URL_ST_ADD
 } from "../utils/Constant";
 
 export default class ListUser extends Component {
+
   constructor(props) {
     super(props);
     this.state={
       lesUtilisateurs:[],
+      lesBureaux:[],
       isOpened:false,
       modeEdit:false,
       editValue:{},
@@ -52,14 +49,16 @@ export default class ListUser extends Component {
     Service.update(URL_USER_DELETE+"/"+id,{},"DELETE")
   }
 
-  expired = () => {alert("Cet utilisateur est un zombie")
+  expired = () => {
+    alert("Cet utilisateur est un zombie")
   }
 
-  notexpired = () => {alert("Cet utilisateur n'est pas un zombie")
+  notexpired = () => {
+    alert("Cet utilisateur n'est pas un zombie")
   }
 
   handleAdd=(event)=>{
-    this.setState({isOpened:true})
+    this.setState({isOpened:true,editValue:{}})
   }
 
   dialogClose=()=>{
@@ -75,11 +74,9 @@ export default class ListUser extends Component {
       }else
       {
         const index=lesUtilisateurs.findIndex((user)=>{
-          return user.numero==p.numero;
+          return user.id==p.id;
         });
-
         lesUtilisateurs[index]=p;
-
       }
       this.setState({modeEdit:false,lesUtilisateurs:lesUtilisateurs});
     })
@@ -91,7 +88,6 @@ export default class ListUser extends Component {
     const u=lesUtilisateurs.find((user)=>{
       return user.id==id;
     });
-    console.log(u);
     this.setState({
       modeEdit:true,
       isOpened:true,
@@ -99,66 +95,122 @@ export default class ListUser extends Component {
     })
   }
 
+  parseInput=(row)=> {
+    const date = this.state.row;
+    return row.find(date);
+  }
+
+  handleExport=(data)=> {
+    /*Service.get(URL_USER_EXPORT).then(
+      exportData=>{
+        Service.get(URL_BU_EXPORT).then(buExportData=>{});
+      }
+    );*/
+  }
+
+  handleImport=(data) => {
+    Service.get(URL_BU_ALL)
+    .then(bureauxData=>{
+      for(var i = 1; i < data.length; i++){
+        var saveUser = true;
+        const idx = bureauxData.findIndex(bu => bu.numero === data[i][5])
+        this.setState({isOpened:true,editValue:{}})
+        const dateA = new Date(Date.parse(data[i][6]));
+        const dateD = new Date(Date.parse(data[i][7]));
+        var ust = null;
+        Service.get(URL_ST_ALL).then(statutsUtilisateur=>{
+          for(var j = 0; j < statutsUtilisateur.length; ++j) {
+            if(statutsUtilisateur[j].nom == data[i][5]) {
+              ust = statutsUtilisateur[j];
+            }
+        }
+        }
+        );
+        if(ust == null) {
+          /*ust = {
+
+          }
+          Service.update(URL_USER_ADD, st, "PUT")*/
+        }
+        const user = {
+          nom:data[i][0],
+          prenom:data[i][1],
+          nomStatut:data[i][4],
+          bureau:idx == -1 ? null : bureauxData[idx],
+          dateArrivee:dateA,
+          dateDepart:dateD,
+          statut : ust,
+          id: this.state.id,
+          email:data[i][9],
+          laboratoire:data[i][10]
+        }
+        Service.get(URL_USER_ALL).then(userData=>{
+          for(var i = 0; i < userData.length; ++i) {
+            if(userData[i].nom == user.nom) {
+              saveUser = false
+            }
+          }
+        });
+        if(saveUser) {
+          this.save(user, false)
+        }
+        }
+        this.setState({isOpened:false})
+      }
+    )
+  }
+
   render() {
-    const {lesUtilisateurs,anchorEL}=this.state;
+    const {lesUtilisateurs}=this.state;
     return(
       <div>
         <div>
           <Button onClick={this.handleAdd}><Icon>add_circle</Icon></Button>
           <AddUser editMode={this.state.modeEdit} editValue={this.state.editValue}  opened={this.state.isOpened} closed={this.dialogClose} saved={this.save}></AddUser>
+          <Button onClick={this.handleExport}><Icon>cloud_download</Icon>Export</Button>
+            <br></br>
+            <Icon>cloud_upload</Icon>
+          <CSVReader
+            cssClass="react-csv-input"
+            label="Import"
+            onFileLoaded={this.handleImport}
+          />
         </div>
         <Table >
-            <TableHead style={{background:"beige"}}>
-              <TableCell>Info</TableCell>
-              <TableCell>Nom</TableCell>
-              <TableCell>Prenom</TableCell>
-              <TableCell>Statut</TableCell>
-              <TableCell>Date d'arrivée</TableCell>
-              <TableCell>Date de départ</TableCell>
-              <TableCell>Bureau</TableCell>
-              <TableCell></TableCell>
-              <TableCell></TableCell>
-            </TableHead>
+          <TableHead style={{background:" #3f51b5 "}}>
+            <TableCell>Info</TableCell>
+            <TableCell>Nom</TableCell>
+            <TableCell>Prenom</TableCell>
+            <TableCell>Statut</TableCell>
+            <TableCell>Date d'arrivée</TableCell>
+            <TableCell>Date de départ</TableCell>
+            <TableCell>Bureau</TableCell>
+            <TableCell></TableCell>
+          </TableHead>
           <TableBody>
             {
               lesUtilisateurs.map((user)=>(
-                  <TableRow key={user.id}  style={{background:new Date(user.dateDepart) < new Date()?"red":""}} >
-                    <TableCell>
-                      {new Date(user.dateDepart) < new Date()?
-                        <Button onClick={this.expired} color={"primary"}><Icon>info</Icon></Button>:
-                        <Button onClick={this.notexpired} color={"primary"}><Icon>info</Icon></Button>
-                        }
-                    </TableCell>
-                    <TableCell>{user.nom}</TableCell>
-                    <TableCell>{user.prenom}</TableCell>
-                    <TableCell>{user.nomStatut}</TableCell>
-                    <TableCell>{String(new Date(user.dateArrivee).getDate())+
-                        '/'+String(new Date(user.dateArrivee).getMonth()+1)+
-                        '/'+String(new Date(user.dateArrivee).getFullYear())}
-                      </TableCell>
-                      <TableCell>{String(new Date(user.dateDepart).getDate())+
-                          '/'+String(new Date(user.dateDepart).getMonth()+1)+
-                          '/'+String(new Date(user.dateDepart).getFullYear())}
-                        </TableCell>
-                        <TableCell>00</TableCell>
-                        <TableCell>
-                          <Button tag={user.id} onClick={this.handleDelete}   color={"primary"}><Icon>delete</Icon></Button>
-                          <Button tag={user.id} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
-                        </TableCell>
-                      </TableRow>
-                  ))
-                }
-
-
-
-              </TableBody>
-            </Table>
-          </div>
-        );
-      }
-
-
-
-
-
-    }
+                <TableRow key={user.id}  style={{background:new Date(user.dateDepart) < new Date()?"rgba(255,0,0,0.6)":""}} >
+                  <TableCell>
+                    <Tooltip title ={new Date(user.dateDepart) < new Date()?"Cet utilisateur est un zombie":"Cet utilisateur n'est pas un zombie"}>
+                      <Button color={new Date(user.dateDepart) < new Date()?"action":"primary"}><Icon>info</Icon></Button>
+                     </Tooltip>
+                  </TableCell>
+                  <TableCell>{user.nom}</TableCell>
+                  <TableCell>{user.prenom}</TableCell>
+                  <TableCell>{user.nomStatut}</TableCell>
+                  <TableCell>{String(new Date(user.dateArrivee).getDate())+'/'+String(new Date(user.dateArrivee).getMonth()+1)+'/'+String(new Date(user.dateArrivee).getFullYear())}</TableCell>
+                  <TableCell>{String(new Date(user.dateDepart).getDate())+'/'+String(new Date(user.dateDepart).getMonth()+1)+'/'+String(new Date(user.dateDepart).getFullYear())}</TableCell>
+                  <TableCell>{ user.bureau ? user.bureau.numero: "Non Affecté" }</TableCell>
+                  <TableCell><Button tag={user.id} onClick={this.handleDelete} color={"primary"}><Icon>delete</Icon></Button>
+                  <Button tag={user.id} onClick={this.handleEdit} color={"primary"}><Icon>edit</Icon></Button>
+                </TableCell>
+                </TableRow>
+              ))
+            }
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+}
