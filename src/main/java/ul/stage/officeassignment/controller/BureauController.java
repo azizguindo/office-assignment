@@ -4,6 +4,7 @@ package ul.stage.officeassignment.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ul.stage.officeassignment.exception.ResourceAlreadyExistsException;
 import ul.stage.officeassignment.exception.ResourceNotFoundException;
 import ul.stage.officeassignment.model.Bureau;
 import ul.stage.officeassignment.repository.BureauRepository;
@@ -35,7 +36,11 @@ public class BureauController {
     //Add an office
     @PostMapping("/offices")
     public Bureau addOffice(@Valid @RequestBody Bureau bureau){
-        return bureauRepository.save(bureau);
+        Bureau b =  bureauRepository.findByNumero(bureau.getNumero());
+        if(b == null)
+            return bureauRepository.save(bureau);
+        else
+            throw new ResourceAlreadyExistsException("Bureau","numero",b.getNumero());
     }
 
     //Update an office

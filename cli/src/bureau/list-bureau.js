@@ -17,7 +17,9 @@ import {Link} from "react-router-dom";
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import Affecter from "./Affecter";
-
+import xlsExport from "xlsexport";
+import Papa from "papaparse";
+import writeFileP from "write-file-p";
 export default class ListBureau  extends Component{
 
   constructor(props) {
@@ -40,7 +42,7 @@ export default class ListBureau  extends Component{
       bureauAffect:null,
       openAffectDial:false
     };
-
+this.updateData = this.updateData.bind(this);
   }
 
 
@@ -224,6 +226,59 @@ export default class ListBureau  extends Component{
     alert("Ce bureau ne contient pas de zombies ")
   }
 
+  handleExport=(event)=>{
+    const offices=[];
+    this.state.lesBureaux.map((office)=>{
+      offices.push({
+        "Numero" : office.numero,
+        "Places" : office.nbPlaces,
+        "Type" : office.statut,
+      })
+    })
+    const xls = new xlsExport(offices, 'offices');
+    xls.exportToCSV("offices.csv");
+  }
+
+  handleImport=({ target })=>{
+    var results= Papa.parse(target.files[0],{
+      header :true,
+      delimiter: ";",
+      linebreak: "↵",
+      complete: this.updateData
+    });
+  }
+
+  updateData(result) {
+    const data = result.data;
+    const users=[];
+    console.log(data);
+    data.map((office)=>{
+      let importedOffice =({
+        numero : office["Numero"],
+        nbPlaces : office["Places"],
+        nbPlacesOccupees : 0 ,
+        statut : office["Type"]
+      })
+
+      /*Service.update(URL_BU_ADD,importedOffice,"POST")
+      .then(data=>{
+        if(data.error){
+          console.log(data);
+          alert("Erreur lors de l'import : "+data.message);
+        }
+        else{
+          this.state.lesBureaux.push(importedOffice);
+          this.forceUpdate();
+        }
+      }
+    );*/
+  });
+  // Write a text file
+writeFileP(`${__dirname}/de/output.txt`, "Hello World", (err, data) => {
+    console.log(err || data);
+})
+  }
+
   handleAssign=(event)=>{
         const id=event.currentTarget.getAttribute("tag");
         const {lesBureaux}=this.state;
@@ -250,7 +305,20 @@ export default class ListBureau  extends Component{
           <div>
             <Button onClick={this.handleAdd}><Icon>add_circle</Icon></Button>
             <AddBureau editMode={this.state.modeEdit} editValue={this.state.editValue}  opened={this.state.isOpened} closed={this.dialogClose} saved={this.save}></AddBureau>
-          </div>
+              <Button onClick={this.handleExport}><Icon>cloud_download</Icon></Button>
+              <input
+                accept=".csv"
+                style={{ display: 'none' }}
+                id="raised-button-file"
+                onChange={this.handleImport}
+                type="file"
+                />
+              <label htmlFor="raised-button-file">
+                <Button variant="raised" component="span" >
+                  <Icon>cloud_upload</Icon>
+                </Button>
+              </label>
+        </div>
           <div>
             <Affecter  bureau={this.state.bureauAffect}  opened={this.state.openAffectDial} closed={this.dialogCloseAffec} saved={this.saveAffect}></Affecter>
           </div>

@@ -6,8 +6,6 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
 import {Icon,Fab} from "@material-ui/core";
 import {Link} from "react-router-dom";
-
-
 const styles = theme => ({
   root: {
     width: '100%',
@@ -81,6 +79,7 @@ const styles = theme => ({
 });
 
 
+
 function MHead(props) {
   const { classes } = props;
   return (
@@ -91,6 +90,7 @@ function MHead(props) {
             <Fab color={"secondary"}><Link to={"/user/all"}><Icon>people</Icon></Link></Fab>
             <Fab color={"secondary"}><Link to={"/bureau/all"}><Icon>work</Icon></Link></Fab>
             <Fab color={"secondary"}><Link to={"/statut/all"} ><Icon>account_box</Icon></Link></Fab>
+
           </div>
           <div className={classes.grow} />
         </Toolbar>

@@ -13,6 +13,7 @@ import {
   URL_USER_ALL, URL_USER_DELETE,
   URL_USER_UPDATE,URL_BU_ALL
 } from "../utils/Constant";
+import ToolTip1 from 'react-portal-tooltip';
 
 export default class ListUser extends Component {
   constructor(props) {
@@ -23,6 +24,7 @@ export default class ListUser extends Component {
       isOpened:false,
       modeEdit:false,
       editValue:{},
+      isTooltipActive: false
     }
   }
 
@@ -44,8 +46,14 @@ export default class ListUser extends Component {
     }catch (e) {
       console.log("erreur",e.toString());
     }
-console.log(this.state.lesUtilisateurs);
 
+  }
+
+  showTooltip() {
+    this.setState({isTooltipActive: true})
+  }
+  hideTooltip() {
+    this.setState({isTooltipActive: false})
   }
 
   handleDelete=(event)=>{
@@ -102,9 +110,9 @@ console.log(this.state.lesUtilisateurs);
     })
   }
 
-  
 
-  handleUnAssign=(event)=>{
+
+  handleUnassign=(event)=>{
     const id=event.currentTarget.getAttribute("tag");
     const lesUtilisateurs =this.state.lesUtilisateurs;
     const u=lesUtilisateurs.find((user)=>{
@@ -136,13 +144,12 @@ console.log(this.state.lesUtilisateurs);
                 if(user.bureau != null){
                   if( user.bureau.id == this.props.match.params.id){
                     return(
-                      <TableRow key={user.id}  style={{background:new Date(user.dateDepart) < new Date()?"red":""}} >
+                      <TableRow key={user.id}  style={{background:new Date(user.dateDepart) < new Date()?"rgba(255,0,0,0.6)":""}} >
                         <TableCell>
-                          {new Date(user.dateDepart) < new Date()?
-                            <Button onClick={this.expired} color={"primary"}><Icon>info</Icon></Button>:
-                              <Button onClick={this.notexpired} color={"primary"}><Icon>info</Icon></Button>
-                            }
-                          </TableCell>
+                          <Tooltip title ={new Date(user.dateDepart) < new Date()?"Cet utilisateur est un zombie":"Cet utilisateur n'est pas un zombie"}>
+                            <Button color={new Date(user.dateDepart) < new Date()?"action":"primary"}><Icon>info</Icon></Button>
+                           </Tooltip>
+                        </TableCell>
                           <TableCell>{user.nom}</TableCell>
                           <TableCell>{user.prenom}</TableCell>
                           <TableCell>{user.nomStatut}</TableCell>
@@ -154,16 +161,22 @@ console.log(this.state.lesUtilisateurs);
                                 '/'+String(new Date(user.dateDepart).getMonth()+1)+
                                 '/'+String(new Date(user.dateDepart).getFullYear())}
                               </TableCell>
-                              <TableCell>
+                              <TableCell id={"text"} onMouseEnter={this.showTooltip.bind(this)} onMouseLeave={this.hideTooltip.bind(this)}>
                                 { user.bureau ? user.bureau.numero: "Non Affecté" }
+                                <ToolTip1 active={this.state.isTooltipActive} position="bottom" parent={"#text"}>
+                                    <div>
+                                        {user.id}
+                                    </div>
+                                </ToolTip1>
                               </TableCell>
                               <TableCell>
-                              <Tooltip title={"affecter"}>
-                                <Button tag={user.id} onClick={this.handleUnAssign} color={"primary"}><Icon>remove_circle</Icon></Button>
-                              </Tooltip>
-                            </TableCell>
+                                <Tooltip title={"Désaffecter"}>
+                                  <Button tag={user.id} onClick={this.handleUnassign} color={"primary"}><Icon>remove_circle</Icon></Button>
+                                </Tooltip>
+                              </TableCell>
                             </TableRow>);
-                          }else{
+                          }
+                          else{
                             return null;
                           }
                         }

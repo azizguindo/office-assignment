@@ -14,7 +14,7 @@ import java.util.Date;
 public class Utilisateur implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotBlank
@@ -22,6 +22,58 @@ public class Utilisateur implements Serializable {
 
     @NotBlank
     private String prenom;
+
+    @NotBlank
+    private String email;
+
+    private String resAdm;
+
+    private String laboratoire;
+
+    private String structure;
+
+    private String observations;
+
+
+    public String getResAdm() {
+        return resAdm;
+    }
+
+    public void setResAdm(String resAdm) {
+        this.resAdm = resAdm;
+    }
+
+    public String getLaboratoire() {
+        return laboratoire;
+    }
+
+    public void setLaboratoire(String laboratoire) {
+        this.laboratoire = laboratoire;
+    }
+
+    public String getStructure() {
+        return structure;
+    }
+
+    public void setStructure(String structure) {
+        this.structure = structure;
+    }
+
+    public String getObservations() {
+        return observations;
+    }
+
+    public void setObservations(String observations) {
+        this.observations = observations;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     @NotBlank
     private String nomStatut;

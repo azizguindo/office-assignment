@@ -6,4 +6,5 @@ import ul.stage.officeassignment.model.Bureau;
 
 @Repository
 public interface BureauRepository extends JpaRepository<Bureau,Long> {
+    Bureau findByNumero(String numero);
 }

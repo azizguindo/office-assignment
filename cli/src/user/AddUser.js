@@ -7,9 +7,10 @@ import {
   IconButton,
   MenuItem,
   Toolbar,
-  Grid
+  Grid,
+  Paper
 } from "@material-ui/core";
-import { URL_ST_ALL} from "../utils/Constant";
+import { URL_ST_ALL,URL_USER_ALL} from "../utils/Constant";
 import Service from "../service/Service";
 import { Form, Field } from 'react-final-form';
 import {TextField,Select} from 'final-form-material-ui';
@@ -35,6 +36,7 @@ export default class AddUser extends Component{
     this.state={
       nom:"",
       prenom:"",
+      email:"",
       nomStatut:"",
       bureau:"",
       dateArrivee:new Date(),
@@ -45,13 +47,18 @@ export default class AddUser extends Component{
         place :0,
         type : ""
       },
+      structure :"",
+      observations : "",
+      resAdm : "",
+      laboratoire:"",
       hasError:false,
       message:"",
       bureauxDispo:[],
       id:0,
       editMode:false,
       editValue:{},
-      lesStatuts:[]
+      lesStatuts:[],
+      lesUtilisateurs:[],
     }
   }
 
@@ -61,13 +68,19 @@ export default class AddUser extends Component{
       nom:val.nom,
       prenom:val.prenom ,
       nomStatut: val.nomStatut,
+      email:val.email,
       statut : val.statut,
-      dateArrivee : val.dateArrivee,
+      dateArrivee : val.dateArrivee ,
       dateDepart : val.dateDepart,
       bureau: val.bureau,
+      structure :val.structure,
+      observations : val.observations,
+      laboratoire : val.laboratoire,
+      resAdm : val.resAdm,
       id:val.id,
       editMode:nextProps.editMode
     });
+
   }
 
   componentDidMount() {
@@ -80,6 +93,43 @@ export default class AddUser extends Component{
     }catch (e) {
       console.log("erreur",e.toString());
     }
+
+    try {
+      Service.get(URL_USER_ALL)
+      .then(data=>{
+        this.setState({lesUtilisateurs:data});
+      });
+
+    }catch (e) {
+      console.log("erreur",e.toString());
+    }
+  }
+
+  DatePickerWrapper1(props) {
+    const {
+      input: { name, onChange, value, ...restInput },
+      meta,
+      ...rest
+    } = props;
+    const showError =
+    ((meta.submitError && !meta.dirtySinceLastSubmit) || meta.error) &&
+    meta.touched;
+    var d = new Date();
+    var year = d.getFullYear();
+    var month = d.getMonth();
+    var day = d.getDate();
+    return (
+      <DatePicker
+        {...rest}
+        name={name}
+        helperText={showError ? meta.error || meta.submitError : undefined}
+        error={showError}
+        inputProps={restInput}
+        onChange={onChange}
+        value={value == '' ? new Date(year + 1, month, day): value}
+        format="dd/MM/yyyy"
+        />
+    );
   }
 
   DatePickerWrapper(props) {
@@ -100,7 +150,8 @@ export default class AddUser extends Component{
         error={showError}
         inputProps={restInput}
         onChange={onChange}
-        value={value == '' ? null : value}
+        value={value == '' ? new Date() : value}
+        format="dd/MM/yyyy"
         />
     );
   }
@@ -112,16 +163,33 @@ export default class AddUser extends Component{
   }
 
   onSubmit=(values)=>{
+    if(!values.dateArrivee){
+      values.dateArrivee = new Date();
+    }
+
+    if(!values.dateDepart){
+      var d = new Date();
+      var year = d.getFullYear();
+      var month = d.getMonth();
+      var day = d.getDate();
+      values.dateDepart = new Date(year + 1, month, day);
+    }
+
     this.state.lesStatuts.map((statut1)=>{
       if(statut1.nom == values.nomStatut){
         this.props.saved({
           nom:values.nom.charAt(0).toUpperCase() + values.nom.slice(1),
           prenom:values.prenom.charAt(0).toUpperCase() + values.prenom.slice(1),
+          email:values.email,
           nomStatut:values.nomStatut,
-          bureau:null,
+          bureau:this.state.bureau,
           dateArrivee:values.dateArrivee,
           dateDepart:values.dateDepart,
           statut :statut1,
+          structure : values.structure,
+          laboratoire: values.laboratoire,
+          resAdm: values.resAdm,
+          observations : values.observations,
           id: this.state.id,
         },this.state.editMode);
         this.props.closed();
@@ -134,6 +202,14 @@ export default class AddUser extends Component{
 
   validate=(values)=>{
     const errors = {};
+
+    const emails = [];
+    this.state.lesUtilisateurs.map((user)=>{
+      emails.push(user.email)
+    })
+    const verif = emails.filter(mail=>mail==values.email);
+
+
     if (!values.nom) {
       errors.nom = 'Veuillez entrer un nom';
     } else if (values.nom.length < 2) {
@@ -154,6 +230,11 @@ export default class AddUser extends Component{
       errors.dateArrivee= "La date d'arrivée doit être avant la date de départ";
       errors.dateDepart= "La date d'arrivée doit être avant la date de départ";
     }
+if(!this.state.editMode){
+    if(verif.length==1){
+      errors.email= 'Cet email existe deja';
+    }
+  }
     return errors;
   }
 
@@ -172,71 +253,145 @@ export default class AddUser extends Component{
         </AppBar>
         <Form
           onSubmit = {this.onSubmit}
-          initialValues={{nom : this.state.nom,prenom: this.state.prenom,nomStatut:this.state.nomStatut, dateArrivee : this.state.dateArrivee,dateDepart : this.state.dateDepart}}
-          validate={this.validate}
-          render={({ handleSubmit, reset, submitting, pristine, values }) => (
-            <form onSubmit={handleSubmit} style={{margin:"10%"}}>
-              <Field
-                fullWidth
-                required
-                name="nom"
-                component={TextField}
-                type="text"
-                label="Nom"
-                />
-              <Field
-                fullWidth
-                required
-                name="prenom"
-                component={TextField}
-                type="text"
-                label="Prenom"
-                />
+          initialValues={{nom : this.state.nom,
+            prenom: this.state.prenom,
+            nomStatut:this.state.nomStatut,
+            email:this.state.email,
+            resAdm : this.state.resAdm,
+            laboratoire : this.state.laboratoire,
+            structure:this.state.structure,
+            observations: this.state.observations,
+            dateArrivee : this.state.dateArrivee,
+            dateDepart : this.state.dateDepart}}
+            validate={this.validate}
+            render={({ handleSubmit, reset, submitting, pristine, values }) => (
+              <form onSubmit={handleSubmit} style={{margin:"10%"}}>
+                <Paper style={{ padding: 16 }}>
+                  <Grid container alignItems="flex-start" spacing={8}>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        required
+                        name="nom"
+                        component={TextField}
+                        type="text"
+                        label="Nom"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        required
+                        name="prenom"
+                        component={TextField}
+                        type="text"
+                        label="Prenom"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        required
+                        name="email"
+                        component={TextField}
+                        type="email"
+                        label="Email"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        required
+                        name="resAdm"
+                        component={TextField}
+                        type="text"
+                        label="Res. Adm"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        name="nomStatut"
+                        component={Select}
+                        label="Statut"
+                        formControlProps={{ fullWidth: true }}
+                        >
+                        <MenuItem value={"Professeur"}>Professeur</MenuItem>
+                        <MenuItem value={"PhD"}>PhD</MenuItem>
+                        <MenuItem value={"PostDoc"}>PostDoc</MenuItem>
+                        <MenuItem value={"Stagiaire"}>Stagiaire</MenuItem>
+                        <MenuItem value={"Admin"}>Admin</MenuItem>
+                      </Field>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        name="laboratoire"
+                        component={Select}
+                        label="Laboratoire"
+                        formControlProps={{ fullWidth: true }}
+                        >
+                        <MenuItem value={"LORIA"}>LORIA</MenuItem>
+                        <MenuItem value={"INRIA"}>INRIA</MenuItem>
+                      </Field>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        required
+                        name="structure"
+                        component={TextField}
+                        type="text"
+                        label="Structure"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Field
+                        fullWidth
+                        required
+                        name="observations"
+                        component={TextField}
+                        type="text"
+                        label="Observations"
+                        />
+                    </Grid>
 
-              <Field
-                fullWidth
-                name="nomStatut"
-                component={Select}
-                label="Statut"
-                formControlProps={{ fullWidth: true }}
-                >
-                <MenuItem value={"Professeur"}>Professeur</MenuItem>
-                <MenuItem value={"PhD"}>PhD</MenuItem>
-                <MenuItem value={"PostDoc"}>PostDoc</MenuItem>
-                <MenuItem value={"Stagiaire"}>Stagiaire</MenuItem>
-                <MenuItem value={"Admin"}>Admin</MenuItem>
-              </Field>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Field
-                  fullWidth
-                  name="dateArrivee"
-                  component={this.DatePickerWrapper}
-                  label="Date d'arrivée"
-                  />
-
-                <Field
-                  fullWidth
-                  name="dateDepart"
-                  component={this.DatePickerWrapper}
-                  label="Date de départ"
-                  />
-              </MuiPickersUtilsProvider>
-              <Grid item style={{ marginTop: 16 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  disabled={submitting}
-                  >
-                  Submit
-                </Button>
-              </Grid>
-            </form>)}
-            />
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                      <Grid item xs={6}>
+                        <Field
+                          fullWidth
+                          name="dateArrivee"
+                          component={this.DatePickerWrapper}
+                          label="Date d'arrivée"
+                          />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Field
+                          fullWidth
+                          name="dateDepart"
+                          component={this.DatePickerWrapper1}
+                          label="Date de départ"
+                          />
+                      </Grid>
+                    </MuiPickersUtilsProvider>
+                    <Grid item style={{ marginTop: 16 }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        disabled={submitting}
+                        >
+                        Submit
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </form>)}
+              />
 
 
-        </Dialog>
-      );
+          </Dialog>
+        );
+      }
+
     }
-
-  }

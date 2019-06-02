@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur,Long> {
+    Utilisateur findByEmail(String email);
     List<Utilisateur> findByBureauIsNull();
 }

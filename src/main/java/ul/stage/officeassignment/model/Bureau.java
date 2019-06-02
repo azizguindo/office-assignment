@@ -13,8 +13,9 @@ import java.util.Collection;
 @EntityListeners(AuditingEntityListener.class)
 public class Bureau implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
 
     @NotBlank
     private String numero;

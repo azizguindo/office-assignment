@@ -64,6 +64,8 @@ export  default class AddBureau extends Component {
         errors.numero = 'Veuillez entrer un numero';
       } else if (values.numero.length != 4) {
         errors.numero= "Le numero doit avoir 4 caracteres (A/B/C suivi d'un nombre a 3 chiffres)";
+      }else if(!new RegExp("^([A-C][1-9][0-9]{2})$","g").test(values.numero)){
+        errors.numero = "Numero invalide (A/B/C suivi d'un nombre a 3 chiffres. Ex : A100)"
       }
 
       if (!values.places) {

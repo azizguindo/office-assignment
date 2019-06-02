@@ -4,6 +4,7 @@ package ul.stage.officeassignment.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ul.stage.officeassignment.exception.ResourceAlreadyExistsException;
 import ul.stage.officeassignment.exception.ResourceNotFoundException;
 import ul.stage.officeassignment.model.Utilisateur;
 import ul.stage.officeassignment.repository.UtilisateurRepository;
@@ -35,7 +36,11 @@ public class UtilisateurController  {
     //Add a user
     @PostMapping("/users")
     public Utilisateur addUser(@Valid @RequestBody Utilisateur utilisateur){
-        return utilisateurRepository.save(utilisateur);
+        Utilisateur u =  utilisateurRepository.findByEmail(utilisateur.getEmail());
+        if(u == null || utilisateur.getEmail()=="Prénom.Nom@loria.fr")
+            return utilisateurRepository.save(utilisateur);
+        else
+            throw new ResourceAlreadyExistsException("Utilisateur","mail",u.getEmail());
     }
 
     //Update a user
@@ -47,11 +52,17 @@ public class UtilisateurController  {
 
         utilisateur.setNom(utilisateurDetails.getNom());
         utilisateur.setPrenom(utilisateurDetails.getPrenom());
+        utilisateur.setEmail(utilisateurDetails.getEmail());
         utilisateur.setNomStatut(utilisateurDetails.getNomStatut());
         utilisateur.setDateArrivee(utilisateurDetails.getDateArrivee());
         utilisateur.setDateDepart(utilisateurDetails.getDateDepart());
         utilisateur.setStatut(utilisateurDetails.getStatut());
         utilisateur.setBureau(utilisateurDetails.getBureau());
+        utilisateur.setLaboratoire(utilisateurDetails.getLaboratoire());
+        utilisateur.setStructure(utilisateurDetails.getStructure());
+        utilisateur.setResAdm(utilisateurDetails.getResAdm());
+        utilisateur.setObservations(utilisateurDetails.getObservations());
+
         Utilisateur updatedUser = utilisateurRepository.save(utilisateur);
         return updatedUser;
     }
