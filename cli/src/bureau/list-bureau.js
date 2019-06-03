@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import AddBureau from "./add-bureau";
 import Service from "../service/Service";
-import {URL_BU_ADD, URL_BU_ALL, URL_BU_DELETE, URL_BU_UPDATE,URL_USER_ALL} from "../utils/Constant";
+import {URL_BU_ADD, URL_BU_ALL, URL_BU_DELETE, URL_BU_UPDATE, URL_BU_UPLOAD, URL_USER_ALL} from "../utils/Constant";
 import {Link} from "react-router-dom";
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
@@ -286,17 +286,33 @@ writeFileP(`${__dirname}/de/output.txt`, "Hello World", (err, data) => {
          const bureau=lesBureaux.find((bu)=>{
              return bu.id==id;
         })
+
         this.setState({
             openAffectDial:true,
             bureauAffect:bureau
         })
-        console.log(this.state.openAffectDial)
+
     }
 
     dialogCloseAffec=()=>{
             this.setState({isOpened:false})
         }
 
+    handleUpdload=(event)=>{
+      const data=new FormData();
+            let file = event.target.files[0];
+            console.log("Uploading file", event.target.files[0]);
+            data.append('file', event.target.files[0]);
+            data.append('name', 'bureau csv');
+            data.append('description', 'le fichier csv contenant les bureaux');
+            Service.update(URL_BU_UPLOAD,data)
+                .then(data=>{
+                    console.log(data);
+                })
+                .catch(error=>{
+                    console.log(error);
+                });
+        }
   render() {
     const lesBureaux=(this.state.isSearch&&this.state.findItem.length!=0)?this.state.findItem:this.state.lesBureaux;
     const anchorEL=this.state.anchorEL;

@@ -6,7 +6,7 @@ export const URL_BU_ALL=URL+"/offices";
 export const URL_BU_GET_ONE=URL+"/offices/";//+id
 export const URL_BU_UPDATE=URL+"/offices/"//+id
 export const URL_BU_DELETE=URL+"/offices/"//+id
-
+export const  URL_BU_UPLOAD=URL+"/offices/upload";
 
 export const URL_USER_ADD=URL+"/users";//post
 export const URL_USER_ALL=URL+"/users";

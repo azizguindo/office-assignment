@@ -12,6 +12,8 @@ import {
 
 import { Form, Field } from 'react-final-form';
 import {TextField,Select} from 'final-form-material-ui';
+import Service from "../service/Service";
+import {URL_BU_ALL} from "../utils/Constant";
 const styles = {
     appBar: {
         position: 'relative',
@@ -34,6 +36,19 @@ export  default class AddBureau extends Component {
             editMode:false,
             editValue:{}
         };
+    }
+    componentWillMount() {
+        try {
+            Service.get(URL_BU_ALL)
+                .then(data=>{
+                    this.setState({lesBureaux:data});
+                    console.log("add-bureau",data);
+                });
+
+        }catch (e) {
+            console.log("erreur",e.toString());
+        }
+
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
@@ -60,8 +75,16 @@ export  default class AddBureau extends Component {
 
     validate=(values)=>{
       const errors = {};
+      const {lesBureaux,nbPlaces,editMode}=this.state;
+
       if (!values.numero) {
-        errors.numero = 'Veuillez entrer un numero';
+          errors.numero = 'Veuillez entrer un numero';
+
+      }  else if(lesBureaux.find(bu=>{
+
+          return values.numero==bu.numero&&!editMode;
+          })!=undefined){
+              errors.numero = 'Le bureau a déja été créé';
       } else if (values.numero.length != 4) {
         errors.numero= "Le numero doit avoir 4 caracteres (A/B/C suivi d'un nombre a 3 chiffres)";
       }else if(!new RegExp("^([A-C][1-9][0-9]{2})$","g").test(values.numero)){
@@ -73,6 +96,11 @@ export  default class AddBureau extends Component {
       } else if (values.places< 1) {
         errors.places= 'Au moins une place';
       }
+      if(editMode==true)
+        {
+          errors.places=parseInt(values.places)<nbPlaces?"Le nombre de place minimum est  "+nbPlaces:undefined;
+          console.log(parseInt(values.places)<nbPlaces?"iiic":undefined);
+        }
       return errors;
     }
 
@@ -127,6 +155,8 @@ export  default class AddBureau extends Component {
                         component={TextField}
                         type="number"
                         label="Places"
+                        min={1}
+
                       />
                     </Grid>
                     <Grid item style={{ marginTop: 16 }}>
@@ -137,6 +167,7 @@ export  default class AddBureau extends Component {
                         component={Select}
                         label="Statut"
                         formControlProps={{ fullWidth: true }}
+                        disabled={this.state.editMode&&this.state.statut.toLowerCase()!="zrr"}
                         >
                         <MenuItem value={"Standard"}>Standard</MenuItem>
                         <MenuItem value={"ZRR"}>ZRR</MenuItem>

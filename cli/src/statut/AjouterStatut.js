@@ -75,7 +75,7 @@ export default class AjouterStatut extends React.Component{
                             <em>None</em>
                             <MenuItem value={"prof"}>Prof</MenuItem>
                             <MenuItem value={"maitre"}>Maitre</MenuItem>
-                            <MenuItem value={"stagiere"}>Vacataire</MenuItem>
+                            <MenuItem value={"stagiaire"}>Vacataire</MenuItem>
                         </Select>
                     </FormControl>
                     <FormControl margin="normal" error={false} fullWidth={true}>

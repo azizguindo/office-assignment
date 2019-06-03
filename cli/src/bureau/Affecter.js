@@ -46,7 +46,9 @@ export default class Affecter extends Component{
             Service.get(URL_USER_NOT_AFF)
                 .then(data=>{
                     this.setState({lesUtilisateurs:data});
+                    console.log("affecter",data);
                 });
+
         }catch (e) {
             console.log("erreur",e.toString());
         }
@@ -55,6 +57,17 @@ export default class Affecter extends Component{
     componentWillReceiveProps(nextProps, nextContext) {
         if(nextProps.opened) {
             this.setState({opened: nextProps.opened, bureau: nextProps.bureau});
+           const {lesUtilisateurs}=this.state;
+           lesUtilisateurs.map(user=>{
+              console.log(user);
+           });
+           this.setState(lesUtilisateurs.filter(user=>{
+               console.log(nextProps.bureau.statut,user.statut.type)
+             return   nextProps.bureau.statut.toLowerCase()=="std"|| nextProps.bureau.statut.toLowerCase()=="standard"?
+                 true
+                 :
+                 (user.statut.type.toLowerCase()==nextProps.bureau.statut.toLowerCase())
+           }))
         }
     }
 
